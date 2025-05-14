@@ -1,4 +1,3 @@
-// App.js
 import React, { useState, useEffect, useRef } from 'react';
 import { SafeAreaView, View, StatusBar, Animated, Easing } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -33,7 +32,7 @@ const App = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       fadeOut();
-    }, 5000); // 5 seconds fallback
+    }, 3000); 
 
     return () => clearTimeout(timer);
   }, []);
@@ -45,7 +44,7 @@ const App = () => {
   const fadeOut = () => {
     Animated.timing(fadeAnim, {
       toValue: 0,
-      duration: 500, // 1 second fade duration
+      duration: 500,
       easing: Easing.ease,
       useNativeDriver: true,
     }).start(() => setIsLoading(false));
@@ -65,21 +64,12 @@ const App = () => {
               <Stack.Screen 
                 name="Login" 
                 component={LoginScreen}
-                options={{ headerShown: false }} // Hide header for login screen
+                options={{ headerShown: false }}
               />
               <Stack.Screen 
                 name="BrowseProducts" 
                 component={BrowseProducts} 
-                options={{ 
-                  title: 'Browse Products',
-                  headerStyle: {
-                    backgroundColor: '#f8f8f8',
-                  },
-                  headerTintColor: '#000',
-                  headerTitleStyle: {
-                    fontWeight: 'bold',
-                  },
-                }}
+                options={{ headerShown: false }}
               />
             </Stack.Navigator>
           </NavigationContainer>

@@ -4,12 +4,13 @@ import {
   Text, 
   Image, 
   FlatList, 
-  StyleSheet, 
-  Dimensions 
+  TouchableOpacity 
 } from 'react-native';
+import { styles } from '../styles/BrowseProductsStyles';
+import BottomNavigationBar from '../components/BottomNavbar';
 
 const BrowseProducts = () => {
-  // Sample product data with mock image URLs
+
   const products = [
     {
       id: '1',
@@ -101,6 +102,33 @@ const BrowseProducts = () => {
 
   return (
     <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>The XChange</Text>
+        <Image 
+          source={require('../assets/bell_icon.png')}
+          style={styles.notificationIcon}
+        />
+      </View>
+      
+      {/* Search Bar */}
+      <TouchableOpacity style={styles.searchBar}>
+        <Text style={styles.searchText}>Tell us what you're looking for.</Text>
+      </TouchableOpacity>
+      
+      {/* Daily Discovery Header */}
+      <View style={styles.discoveryHeader}>
+        <Text style={styles.discoveryText}>Daily Discovery</Text>
+        <TouchableOpacity style={styles.filterText}>
+          <Text>Filter</Text>
+          <Image 
+            source={require('../assets/filter_icon.png')} 
+            style={styles.filterIcon}
+          />
+        </TouchableOpacity>
+      </View>
+      
+      {/* Product List */}
       <FlatList
         data={products}
         renderItem={renderProduct}
@@ -108,63 +136,11 @@ const BrowseProducts = () => {
         numColumns={2}
         contentContainerStyle={styles.listContent}
       />
+      
+      {/* Bottom Navigation */}
+      <BottomNavigationBar />
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: 20,
-  },
-  listContent: {
-    paddingHorizontal: 10,
-    paddingBottom: 20,
-  },
-  productContainer: {
-    flex: 1,
-    margin: 8,
-    maxWidth: Dimensions.get('window').width / 2 - 16,
-  },
-  productImage: {
-    width: '100%',
-    aspectRatio: 1,
-    borderRadius: 8,
-    marginBottom: 8,
-    backgroundColor: '#f5f5f5', // Fallback background while loading
-  },
-  productName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  productPrice: {
-    fontSize: 16,
-    color: '#2ecc71',
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  productDescription: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 8,
-  },
-  sellerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  sellerImage: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    marginRight: 8,
-    backgroundColor: '#e0e0e0', 
-  },
-  sellerName: {
-    fontSize: 12,
-    color: '#666',
-  },
-});
 
 export default BrowseProducts;

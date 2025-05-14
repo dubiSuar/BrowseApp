@@ -16,9 +16,8 @@ const LoginScreen = ({ navigation }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = () => {
-    // Simple validation - in a real app you would have proper authentication
+    // static login
     if (email && password) {
-      // Navigate to BrowseProducts on successful login
       navigation.navigate('BrowseProducts');
     } else {
       Alert.alert('Error', 'Please enter both email and password');
