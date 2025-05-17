@@ -10,7 +10,6 @@ import { styles } from '../styles/BrowseProductsStyles';
 import BottomNavigationBar from '../components/BottomNavbar';
 
 const BrowseProducts = () => {
-
   const products = [
     {
       id: '1',
@@ -105,10 +104,13 @@ const BrowseProducts = () => {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>The XChange</Text>
-        <Image 
-          source={require('../assets/bell_icon.png')}
-          style={styles.notificationIcon}
-        />
+        <View style={styles.notificationContainer}>
+          <Image 
+            source={require('../assets/bell_icon.png')}
+            style={styles.notificationIcon}
+          />
+          <View style={styles.notificationDot} />
+        </View>
       </View>
       
       {/* Search Bar */}
@@ -120,7 +122,7 @@ const BrowseProducts = () => {
       <View style={styles.discoveryHeader}>
         <Text style={styles.discoveryText}>Daily Discovery</Text>
         <TouchableOpacity style={styles.filterText}>
-          <Text>Filter</Text>
+          <Text style={styles.filterTextContent}>Filter</Text>
           <Image 
             source={require('../assets/filter_icon.png')} 
             style={styles.filterIcon}

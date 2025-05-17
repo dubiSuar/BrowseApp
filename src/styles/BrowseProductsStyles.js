@@ -1,4 +1,3 @@
-// BrowseProductsStyles.js
 import { StyleSheet, Dimensions } from 'react-native';
 
 export const styles = StyleSheet.create({
@@ -15,14 +14,28 @@ export const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 24,
     fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  notificationContainer: {
+    position: 'relative',
+    marginBottom: 20,
   },
   notificationIcon: {
     width: 24,
     height: 24,
   },
+  notificationDot: {
+    position: 'absolute',
+    right: -2,
+    top: -2,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#c4a675',
+  },
   searchBar: {
     backgroundColor: '#f5f5f5',
-    borderRadius: 20,
+    borderRadius: 10,
     paddingHorizontal: 16,
     paddingVertical: 10,
     marginHorizontal: 16,
@@ -46,14 +59,18 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  filterTextContent: {
+    color: '#c4a675',
+  },
   filterIcon: {
     width: 16,
     height: 16,
     marginLeft: 4,
+    tintColor: '#c4a675',
   },
   listContent: {
     paddingHorizontal: 10,
-    paddingBottom: 80, // Extra space for bottom navbar
+    paddingBottom: 80,
   },
   productContainer: {
     flex: 1,
