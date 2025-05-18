@@ -197,6 +197,8 @@
 
 // wag i delete yung taas na comment shits
 
+
+// static data lang tow sa baba
 import React from 'react';
 import { 
   View, 
