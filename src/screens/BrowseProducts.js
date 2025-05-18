@@ -228,6 +228,7 @@ const BrowseProducts = () => {
   };
 
   const renderProduct = ({ item }) => {
+      console.log('Product Item Parameters:', JSON.stringify(item, null, 2));
     return (
       <TouchableOpacity 
         style={styles.productContainer}
