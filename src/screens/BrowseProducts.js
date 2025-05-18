@@ -65,6 +65,15 @@ const BrowseProducts = () => {
 
       if (response.status === 200) {
         if (response.data && response.data.xchange && Array.isArray(response.data.xchange)) {
+          // Log all items and their parameters
+          console.log('Fetched products with parameters:');
+          response.data.xchange.forEach((item, index) => {
+            console.log(`\nProduct ${index + 1}:`);
+            Object.entries(item).forEach(([key, value]) => {
+              console.log(`${key}:`, value);
+            });
+          });
+
           setProducts(prevProducts =>
             loadMore
               ? [...prevProducts, ...response.data.xchange]
@@ -141,32 +150,37 @@ const BrowseProducts = () => {
     ) : null;
   };
 
-  const renderProduct = ({ item }) => (
-    <View style={styles.productContainer}>
-      <Image 
-        source={{ uri: item.item_image || 'https://picsum.photos/300/300' }} 
-        style={styles.productImage} 
-        resizeMode="cover"
-      />
-      <Text style={styles.productPrice}>₱{item.selling_price || '0'}</Text>
-      <Text style={styles.productName}>{item.model || item.brand || 'No Name'}</Text>
+  const renderProduct = ({ item }) => {
+    // Log individual product parameters when rendered
+    console.log('Rendering product with parameters:');
+    Object.entries(item).forEach(([key, value]) => {
+      console.log(`${key}:`, value);
+    });
 
-      <Text style={styles.productDescription} numberOfLines={2}>
-        {item.description || 'No description available'}
-      </Text>
-      <View style={styles.sellerContainer}>
-        {item.lister_image ? (
-          <Image 
-            source={{ uri: item.lister_image }} 
-            style={styles.sellerImage} 
-          />
-        ) : null}
-        <Text style={styles.sellerName} numberOfLines={1}>
-          {item.lister_name || 'Unknown seller'}
-        </Text>
+    return (
+      <View style={styles.productContainer}>
+        <Image 
+          source={{ uri: item.item_image || 'https://picsum.photos/300/300' }} 
+          style={styles.productImage} 
+          resizeMode="cover"
+        />
+        <Text style={styles.productPrice}>₱{item.selling_price || '0'}</Text>
+        <Text style={styles.productName}>{item.model || item.brand || 'No Name'}</Text>
+
+        <View style={styles.sellerContainer}>
+          {item.lister_image ? (
+            <Image 
+              source={{ uri: item.lister_image }} 
+              style={styles.sellerImage} 
+            />
+          ) : null}
+          <Text style={styles.sellerName} numberOfLines={1}>
+            {item.lister_name || 'Unknown seller'}
+          </Text>
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   if (error) {
     return (
