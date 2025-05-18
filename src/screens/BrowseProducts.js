@@ -9,6 +9,7 @@ import {
   Alert,
   RefreshControl
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { styles } from '../styles/BrowseProductsStyles';
 import BottomNavigationBar from '../components/BottomNavbar';
 import axios from 'axios';
@@ -43,6 +44,7 @@ const ProductSkeleton = () => (
 );
 
 const BrowseProducts = () => {
+  const navigation = useNavigation();
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -50,6 +52,7 @@ const BrowseProducts = () => {
   const [error, setError] = useState(null);
   const [lastListingId, setLastListingId] = useState('');
   const [hasMore, setHasMore] = useState(true);
+  const [showSkeleton, setShowSkeleton] = useState(false);
 
   const fetchProducts = async (loadMore = false) => {
     if ((isLoading && !loadMore) || (loadMore && !hasMore)) return;
@@ -65,15 +68,6 @@ const BrowseProducts = () => {
 
       if (response.status === 200) {
         if (response.data && response.data.xchange && Array.isArray(response.data.xchange)) {
-          // Log all items and their parameters
-          console.log('Fetched products with parameters:');
-          response.data.xchange.forEach((item, index) => {
-            console.log(`\nProduct ${index + 1}:`);
-            Object.entries(item).forEach(([key, value]) => {
-              console.log(`${key}:`, value);
-            });
-          });
-
           setProducts(prevProducts =>
             loadMore
               ? [...prevProducts, ...response.data.xchange]
@@ -115,17 +109,20 @@ const BrowseProducts = () => {
     } finally {
       loadMore ? setIsLoadingMore(false) : setIsLoading(false);
       setIsRefreshing(false);
+      setShowSkeleton(false);
     }
   };
 
   const handleRefresh = () => {
     setIsRefreshing(true);
+    setShowSkeleton(true);
     setLastListingId('');
     setHasMore(true);
     fetchProducts();
   };
 
   useEffect(() => {
+    setShowSkeleton(true);
     fetchProducts();
   }, []);
 
@@ -151,14 +148,11 @@ const BrowseProducts = () => {
   };
 
   const renderProduct = ({ item }) => {
-    // Log individual product parameters when rendered
-    console.log('Rendering product with parameters:');
-    Object.entries(item).forEach(([key, value]) => {
-      console.log(`${key}:`, value);
-    });
-
     return (
-      <View style={styles.productContainer}>
+      <TouchableOpacity 
+        style={styles.productContainer}
+        onPress={() => navigation.navigate('ProductsPage', { itemId: item.item_id })}
+      >
         <Image 
           source={{ uri: item.item_image || 'https://picsum.photos/300/300' }} 
           style={styles.productImage} 
@@ -166,7 +160,6 @@ const BrowseProducts = () => {
         />
         <Text style={styles.productPrice}>₱{item.selling_price || '0'}</Text>
         <Text style={styles.productName}>{item.model || item.brand || 'No Name'}</Text>
-
         <View style={styles.sellerContainer}>
           {item.lister_image ? (
             <Image 
@@ -178,7 +171,7 @@ const BrowseProducts = () => {
             {item.lister_name || 'Unknown seller'}
           </Text>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -227,13 +220,21 @@ const BrowseProducts = () => {
       </View>
       
       {/* Product List */}
-      {isLoading && !isRefreshing ? (
+      {showSkeleton || isLoading ? (
         <FlatList
           data={[1, 2, 3, 4, 5, 6]} // Dummy data for skeleton
           renderItem={() => <ProductSkeleton />}
           keyExtractor={(item) => item.toString()}
           numColumns={2}
           contentContainerStyle={styles.listContent}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={handleRefresh}
+              colors={['#6200ee']}
+              tintColor="#6200ee"
+            />
+          }
         />
       ) : (
         <FlatList

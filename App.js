@@ -6,6 +6,7 @@ import Video from 'react-native-video';
 import { styles, splashStyles } from './src/styles/AppStyles';
 import LoginScreen from './src/screens/LoginScreen';
 import BrowseProducts from './src/screens/BrowseProducts';
+import ProductsPage from './src/screens/ProductsPage';
 
 const Stack = createStackNavigator();
 
@@ -61,17 +62,22 @@ const App = () => {
         ) : (
           <NavigationContainer>
             <Stack.Navigator initialRouteName="Login">
-              <Stack.Screen 
-                name="Login" 
-                component={LoginScreen}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen 
-                name="BrowseProducts" 
-                component={BrowseProducts} 
-                options={{ headerShown: false }}
-              />
-            </Stack.Navigator>
+  <Stack.Screen 
+    name="Login" 
+    component={LoginScreen}
+    options={{ headerShown: false }}
+  />
+  <Stack.Screen 
+    name="BrowseProducts" 
+    component={BrowseProducts} 
+    options={{ headerShown: false }}
+  />
+  <Stack.Screen 
+    name="ProductsPage" 
+    component={ProductsPage} 
+    options={{ headerShown: false }}
+  />
+</Stack.Navigator>
           </NavigationContainer>
         )}
       </SafeAreaView>
