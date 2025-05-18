@@ -223,7 +223,7 @@ const BrowseProducts = () => {
       </View>
     ) : null;
   };
-  
+
 // laman ng flatlist
   const renderProduct = ({ item }) => {
     console.log('Product Item Parameters:', JSON.stringify(item, null, 2));
@@ -237,7 +237,7 @@ const BrowseProducts = () => {
           style={styles.productImage} 
           resizeMode="cover"
         />
-        <Text style={styles.productPrice}>₱{item.selling_price || '0'}</Text>
+        <Text style={styles.productPrice}>PHP {item.selling_price || '0'}</Text>
         <Text style={styles.productName}>{item.model || item.brand || 'No Name'}</Text>
         <View style={styles.sellerContainer}>
           {item.lister_image ? (
