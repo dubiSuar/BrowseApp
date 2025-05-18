@@ -147,6 +147,7 @@ export const styles = StyleSheet.create({
 skeleton: {
   backgroundColor: '#e1e1e1',
   borderRadius: 4,
+  overflow: 'hidden',
 },
 footer: {
   padding: 10,

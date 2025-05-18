@@ -12,6 +12,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { styles } from '../styles/BrowseProductsStyles';
 import BottomNavigationBar from '../components/BottomNavbar';
+import { Animated } from 'react-native';
 import axios from 'axios';
 
 // API configuration
@@ -30,19 +31,98 @@ const API_PARAMS = {
 };
 
 // Skeleton Loading Component
-const ProductSkeleton = () => (
-  <View style={styles.productContainer}>
-    <View style={[styles.productImage, styles.skeleton]} />
-    <View style={[styles.productName, styles.skeleton, {width: '70%', height: 20}]} />
-    <View style={[styles.productPrice, styles.skeleton, {width: '40%', height: 18}]} />
-    <View style={[styles.productDescription, styles.skeleton, {height: 16}]} />
-    <View style={styles.sellerContainer}>
-      <View style={[styles.sellerImage, styles.skeleton]} />
-      <View style={[styles.sellerName, styles.skeleton, {width: '60%', height: 16}]} />
-    </View>
-  </View>
-);
+// const ProductSkeleton = () => (
+//   <View style={styles.productContainer}>
+//     <View style={[styles.productImage, styles.skeleton]} />
+//     <View style={[styles.productName, styles.skeleton, {width: '70%', height: 20}]} />
+//     <View style={[styles.productPrice, styles.skeleton, {width: '40%', height: 18}]} />
+//     <View style={[styles.productDescription, styles.skeleton, {height: 16}]} />
+//     <View style={styles.sellerContainer}>
+//       <View style={[styles.sellerImage, styles.skeleton]} />
+//       <View style={[styles.sellerName, styles.skeleton, {width: '60%', height: 16}]} />
+//     </View>
+//   </View>
+// );
+const ProductSkeleton = () => {
+  const pulseAnim = new Animated.Value(0);
 
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 1500,
+          useNativeDriver: false,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 0,
+          duration: 1500,
+          useNativeDriver: false,
+        }),
+      ])
+    ).start();
+
+    return () => pulseAnim.stopAnimation();
+  }, []);
+
+  const backgroundColor = pulseAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['#e1e1e1', '#f0f0f0'], // Light to lighter gray
+  });
+
+  return (
+    <View style={styles.productContainer}>
+      <Animated.View 
+        style={[
+          styles.productImage, 
+          styles.skeleton,
+          { backgroundColor }
+        ]} 
+      />
+      <Animated.View 
+        style={[
+          styles.productName, 
+          styles.skeleton, 
+          {width: '70%', height: 20},
+          { backgroundColor }
+        ]} 
+      />
+      <Animated.View 
+        style={[
+          styles.productPrice, 
+          styles.skeleton, 
+          {width: '40%', height: 18},
+          { backgroundColor }
+        ]} 
+      />
+      <Animated.View 
+        style={[
+          styles.productDescription, 
+          styles.skeleton, 
+          {height: 16},
+          { backgroundColor }
+        ]} 
+      />
+      <View style={styles.sellerContainer}>
+        <Animated.View 
+          style={[
+            styles.sellerImage, 
+            styles.skeleton,
+            { backgroundColor }
+          ]} 
+        />
+        <Animated.View 
+          style={[
+            styles.sellerName, 
+            styles.skeleton, 
+            {width: '60%', height: 16},
+            { backgroundColor }
+          ]} 
+        />
+      </View>
+    </View>
+  );
+};
 const BrowseProducts = () => {
   const navigation = useNavigation();
   const [products, setProducts] = useState([]);
