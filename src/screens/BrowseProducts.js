@@ -223,7 +223,8 @@ const BrowseProducts = () => {
       </View>
     ) : null;
   };
-
+  
+// laman ng flatlist
   const renderProduct = ({ item }) => {
     console.log('Product Item Parameters:', JSON.stringify(item, null, 2));
     return (
@@ -253,6 +254,8 @@ const BrowseProducts = () => {
     );
   };
 
+
+  // eto yung modal sa filter
     const FilterModal = () => {
     const [slideAnim] = useState(new Animated.Value(Dimensions.get('window').width));
 
