@@ -144,4 +144,179 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 1,
   },
+
+  // skeleton css
+skeleton: {
+  backgroundColor: '#e1e1e1',
+  borderRadius: 4,
+  overflow: 'hidden',
+},
+footer: {
+  padding: 10,
+  alignItems: 'center',
+},
+errorText: {
+  color: 'red',
+  marginBottom: 10,
+  textAlign: 'center',
+},
+retryButton: {
+  backgroundColor: '#6200ee',
+  padding: 10,
+  borderRadius: 5,
+},
+retryButtonText: {
+  color: 'white',
+  fontWeight: 'bold',
+},
+
+// filter css
+modalContainer: {
+  flex: 1,
+  backgroundColor: '#fff',
+  padding: 16,
+  position: 'absolute',
+  right: 0,
+  top: 0,
+  bottom: 0,
+},
+modalHeader: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: 20,
+  borderBottomWidth: 1,
+  borderBottomColor: '#eee',
+  paddingBottom: 10,
+},
+modalTitle: {
+  fontSize: 20,
+  fontWeight: 'bold',
+},
+closeButton: {
+  fontSize: 24,
+  color: '#666',
+},
+filterSection: {
+  marginBottom: 20,
+  borderBottomWidth: 1,
+  borderBottomColor: '#eee',
+  paddingBottom: 10,
+},
+sectionTitle: {
+  fontSize: 16,
+  fontWeight: 'bold',
+  marginBottom: 10,
+  color: '#333',
+},
+sortOptions: {
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  marginBottom: 10,
+},
+sortButton: {
+  paddingHorizontal: 16,
+  paddingVertical: 8,
+  marginRight: 10,
+  marginBottom: 10,
+  borderRadius: 4,
+  borderWidth: 1,
+  borderColor: '#ddd',
+},
+activeSort: {
+  backgroundColor: '#c4a675',
+  borderColor: '#c4a675',
+},
+sortText: {
+  color: '#333',
+},
+activeSortText: {
+  color: '#fff',
+},
+categoryContainer: {
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  justifyContent: 'space-between',
+},
+categoryButton: {
+  padding: 10,
+  marginBottom: 8,
+  borderRadius: 4,
+  borderWidth: 1,
+  borderColor: '#ddd',
+  alignItems: 'center',
+},
+selectedCategory: {
+  backgroundColor: '#c4a675',
+  borderColor: '#c4a675',
+},
+categoryText: {
+  color: '#333',
+},
+selectedCategoryText: {
+  color: '#fff',
+},
+priceInputContainer: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginBottom: 10,
+},
+priceInput: {
+  flex: 1,
+  borderWidth: 1,
+  borderColor: '#ddd',
+  borderRadius: 4,
+  padding: 8,
+  marginHorizontal: 5,
+},
+priceRangeSeparator: {
+  marginHorizontal: 5,
+},
+priceRangeContainer: {
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  justifyContent: 'space-between',
+},
+priceRangeButton: {
+  padding: 10,
+  marginBottom: 8,
+  borderRadius: 4,
+  borderWidth: 1,
+  borderColor: '#ddd',
+  minWidth: '45%',
+  alignItems: 'center',
+},
+priceRangeText: {
+  color: '#333',
+},
+filterActions: {
+  flexDirection: 'row',
+  justifyContent: 'center',
+  paddingTop: 10,
+  borderTopWidth: 1,
+  borderTopColor: '#eee',
+},
+clearButton: {
+  padding: 12,
+  borderRadius: 4,
+  borderWidth: 1,
+  borderColor: '#c4a675',
+  flex: 1,
+  marginRight: 10,
+  alignItems: 'center',
+},
+applyButton: {
+  padding: 12,
+  borderRadius: 4,
+  backgroundColor: '#c4a675',
+  flex: 1,
+  alignItems: 'center',
+},
+clearButtonText: {
+  color: '#c4a675',
+},
+applyButtonText: {
+  color: '#fff',
+},
+
 });
