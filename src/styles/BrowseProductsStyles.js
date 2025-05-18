@@ -144,4 +144,26 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 1,
   },
+skeleton: {
+  backgroundColor: '#e1e1e1',
+  borderRadius: 4,
+},
+footer: {
+  padding: 10,
+  alignItems: 'center',
+},
+errorText: {
+  color: 'red',
+  marginBottom: 10,
+  textAlign: 'center',
+},
+retryButton: {
+  backgroundColor: '#6200ee',
+  padding: 10,
+  borderRadius: 5,
+},
+retryButtonText: {
+  color: 'white',
+  fontWeight: 'bold',
+},
 });
