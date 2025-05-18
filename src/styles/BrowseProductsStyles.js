@@ -144,6 +144,8 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 1,
   },
+
+  // skeleton css
 skeleton: {
   backgroundColor: '#e1e1e1',
   borderRadius: 4,
@@ -167,6 +169,8 @@ retryButtonText: {
   color: 'white',
   fontWeight: 'bold',
 },
+
+// filter css
 modalContainer: {
   flex: 1,
   backgroundColor: '#fff',
