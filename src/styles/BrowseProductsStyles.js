@@ -218,8 +218,9 @@ sortButton: {
   paddingHorizontal: 16,
   paddingVertical: 8,
   marginRight: 10,
+  backgroundColor: '#eaeaea',
   marginBottom: 10,
-  borderRadius: 4,
+  borderRadius: 20,
   borderWidth: 1,
   borderColor: '#ddd',
 },
@@ -241,10 +242,13 @@ categoryContainer: {
 categoryButton: {
   padding: 10,
   marginBottom: 8,
-  borderRadius: 4,
+  borderRadius: 60,
   borderWidth: 1,
   borderColor: '#ddd',
+  backgroundColor: '#eaeaea',
   alignItems: 'center',
+  flexDirection: 'row',
+  justifyContent: 'center',
 },
 selectedCategory: {
   backgroundColor: '#c4a675',
@@ -298,7 +302,7 @@ filterActions: {
 },
 clearButton: {
   padding: 12,
-  borderRadius: 4,
+  borderRadius: 20,
   borderWidth: 1,
   borderColor: '#c4a675',
   flex: 1,
@@ -307,7 +311,7 @@ clearButton: {
 },
 applyButton: {
   padding: 12,
-  borderRadius: 4,
+  borderRadius: 20,
   backgroundColor: '#c4a675',
   flex: 1,
   alignItems: 'center',

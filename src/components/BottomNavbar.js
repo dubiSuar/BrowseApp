@@ -33,7 +33,7 @@ const BottomNavBar = ({ navigation }) => {
         style={navStyles.centerNavButton}
         onPress={() => console.log('Center Action')}
       >
-        <Image source={require('../assets/xurelogo.png')} style={navStyles.centerIcon} />
+        <Image source={require('../assets/curewlogo.png')} style={navStyles.centerIcon} />
       </TouchableOpacity>
     </>
   );
@@ -69,26 +69,30 @@ const navStyles = StyleSheet.create({
     color: '#333',
     marginTop: 2,
   },
-  centerNavButton: {
-    position: 'absolute',
-    bottom: 30,
-    alignSelf: 'center',
-    backgroundColor: '#2e2e2e',
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 1,
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-  },
+centerNavButton: {
+  position: 'absolute',
+  bottom: 30,
+  alignSelf: 'center',
+  backgroundColor: 'white',
+  width: 60,
+  height: 60,
+  borderRadius: 30,
+  justifyContent: 'center',
+  alignItems: 'center',
+  zIndex: 1,
+  elevation: 4,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.3,
+  shadowRadius: 3,
+  shadowOffset: { width: 0, height: 4 }, // Shadow only on the bottom
+  shadowOpacity: 0.3,
+  shadowRadius: 4,
+},
+
   centerIcon: {
-    width: 28,
-    height: 28,
+    width: 56,
+    height: 56,
     resizeMode: 'contain',
   },
 });
