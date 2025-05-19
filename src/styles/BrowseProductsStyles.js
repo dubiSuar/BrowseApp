@@ -319,4 +319,34 @@ applyButtonText: {
   color: '#fff',
 },
 
+categoryDropdownButton: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  padding: 12,
+  borderWidth: 1,
+  borderColor: '#ddd',
+  borderRadius: 4,
+  marginBottom: 10,
+},
+categoryDropdownText: {
+  color: '#333',
+},
+dropdownIcon: {
+  width: 16,
+  height: 16,
+},
+categoryDropdownList: {
+  maxHeight: 200,
+  borderWidth: 1,
+  borderColor: '#ddd',
+  borderRadius: 4,
+  marginBottom: 10,
+},
+categoryDropdownItem: {
+  padding: 12,
+  borderBottomWidth: 1,
+  borderBottomColor: '#eee',
+},
+
 });

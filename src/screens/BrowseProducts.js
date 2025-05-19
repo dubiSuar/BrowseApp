@@ -75,6 +75,8 @@ const ProductSkeleton = () => {
 };
 
 const BrowseProducts = () => {
+   const [selectedCategory, setSelectedCategory] = useState('');
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const navigation = useNavigation();
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -255,9 +257,10 @@ const BrowseProducts = () => {
     );
   };
 
-
-  // eto yung modal sa filter
-    const FilterModal = () => {
+  //-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0
+  //      eto yung modal sa filter
+  //-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0
+   const FilterModal = () => {
     const [slideAnim] = useState(new Animated.Value(Dimensions.get('window').width));
 
     useEffect(() => {
@@ -306,15 +309,53 @@ const BrowseProducts = () => {
           </View>
 
           <ScrollView>
+           
+
             <View style={styles.filterSection}>
+              <Text style={styles.sectionTitle}>Category</Text>
+              <TouchableOpacity 
+                style={styles.categoryDropdownButton}
+                onPress={() => setShowCategoryDropdown(!showCategoryDropdown)}
+              >
+                <Text style={styles.categoryDropdownText}>
+                  {selectedCategory || 'Select Category'}
+                </Text>
+                <Image 
+                  source={showCategoryDropdown ? 
+                    require('../assets/arrow_up.png') : 
+                    require('../assets/arrow_down.png')}
+                  style={styles.dropdownIcon}
+                />
+              </TouchableOpacity>
+              
+              {showCategoryDropdown && (
+                <View style={styles.categoryDropdownList}>
+                  {categories.map((category) => (
+                    <TouchableOpacity
+                      key={category}
+                      style={[
+                        styles.categoryDropdownItem,
+                        selectedCategory === category && styles.selectedCategory
+                      ]}
+                      onPress={() => {
+                        setSelectedCategory(category);
+                        setShowCategoryDropdown(false);
+                      }}
+                    >
+                      <Text style={selectedCategory === category ? 
+                        styles.selectedCategoryText : styles.categoryText}>
+                        {category}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
+            </View>
+
+             <View style={styles.filterSection}>
               <Text style={styles.sectionTitle}>Sort</Text>
               <View style={styles.sortOptions}>
-                <TouchableOpacity 
-                  style={[styles.sortButton, sortOrder === 'Category' && styles.activeSort]}
-                  onPress={() => setSortOrder('Category')}
-                >
-                  <Text style={sortOrder === 'Category' ? styles.activeSortText : styles.sortText}>Category</Text>
-                </TouchableOpacity>
+              
                 <TouchableOpacity 
                   style={[styles.sortButton, sortOrder === 'ASC' && styles.activeSort]}
                   onPress={() => setSortOrder('ASC')}
@@ -331,10 +372,9 @@ const BrowseProducts = () => {
             </View>
 
             <View style={styles.filterSection}>
-              <Text style={styles.sectionTitle}>Daily Disc</Text>
-              <Text style={[styles.sectionTitle, { fontSize: 14, marginBottom: 10 }]}>Filter by Category</Text>
+              <Text style={styles.sectionTitle}>Filter by Category</Text>
               <View style={styles.categoryContainer}>
-                {categories.map((category, index) => (
+                {categories.map((category) => (
                   <TouchableOpacity
                     key={category}
                     style={[
@@ -344,7 +384,8 @@ const BrowseProducts = () => {
                     ]}
                     onPress={() => toggleCategory(category)}
                   >
-                    <Text style={selectedCategories.includes(category) ? styles.selectedCategoryText : styles.categoryText}>
+                    <Text style={selectedCategories.includes(category) ? 
+                      styles.selectedCategoryText : styles.categoryText}>
                       {category}
                     </Text>
                   </TouchableOpacity>
@@ -381,23 +422,27 @@ const BrowseProducts = () => {
                     ]}
                     onPress={() => setPriceRange({ min: range.min, max: range.max })}
                   >
-                    <Text style={priceRange.min === range.min && priceRange.max === range.max ? styles.selectedCategoryText : styles.priceRangeText}>
+                    <Text style={priceRange.min === range.min && priceRange.max === range.max ? 
+                      styles.selectedCategoryText : styles.priceRangeText}>
                       {range.label}
                     </Text>
                   </TouchableOpacity>
                 ))}
-                <TouchableOpacity
-                  style={styles.priceRangeButton}
-                  onPress={() => setPriceRange({ min: '', max: '' })}
-                >
-                  <Text style={styles.priceRangeText}>Clear</Text>
-                </TouchableOpacity>
               </View>
             </View>
           </ScrollView>
 
           <View style={styles.filterActions}>
-            <TouchableOpacity style={styles.applyButton} onPress={applyFilters}>
+            <TouchableOpacity 
+              style={styles.clearButton} 
+              onPress={clearFilters}
+            >
+              <Text style={styles.clearButtonText}>Clear</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.applyButton} 
+              onPress={applyFilters}
+            >
               <Text style={styles.applyButtonText}>Apply</Text>
             </TouchableOpacity>
           </View>

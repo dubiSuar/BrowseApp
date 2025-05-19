@@ -177,6 +177,26 @@ export const styles = StyleSheet.create({
   buttonTextBuy: {
     color: '#fff',
   },
+
+  sortButton: {
+  padding: 10,
+  borderWidth: 1,
+  borderColor: '#ccc',
+  borderRadius: 5,
+  flex: 1,
+  marginHorizontal: 5,
+  alignItems: 'center',
+},
+activeSort: {
+  borderColor: '#6200ee',
+  backgroundColor: '#6200ee',
+},
+sortText: {
+  color: '#333',
+},
+activeSortText: {
+  color: '#fff',
+},
 });
 
 export default styles;
