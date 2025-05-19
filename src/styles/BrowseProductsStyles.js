@@ -319,6 +319,8 @@ applyButtonText: {
   color: '#fff',
 },
 
+// css nung sa category dropdown
+
 categoryDropdownButton: {
   flexDirection: 'row',
   justifyContent: 'space-between',

@@ -310,7 +310,7 @@ const BrowseProducts = () => {
 
           <ScrollView>
            
-
+{/* category shits */}
             <View style={styles.filterSection}>
               <Text style={styles.sectionTitle}>Category</Text>
               <TouchableOpacity 
