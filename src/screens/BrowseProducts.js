@@ -230,7 +230,8 @@ const BrowseProducts = () => {
     return (
       <TouchableOpacity 
         style={styles.productContainer}
-        onPress={() => navigation.navigate('ProductsPage', { itemId: item.item_id })}
+        // onPress={() => navigation.navigate('ProductsPage', { itemId: item.item_id })}
+         onPress={() => navigation.navigate('ProductsPage', { item: item })}
       >
         <Image 
           source={{ uri: item.item_image || 'https://picsum.photos/300/300' }} 
