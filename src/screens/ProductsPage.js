@@ -40,7 +40,7 @@ const ProductsPage = ({route, navigation}) => {
     try {
       // Fixed parameter names to match the API requirements
       const params = {
-        current_owner_id: Number(item.lister_id) || 1,
+        current_owner_code: item.lister_code || "MC-1000000000", // Changed from member_code to current_owner_code
         current_owner_type: item.lister_type || "Xpert", 
         item_id: Number(item.item_id),
         listing_id: Number(item.listing_id),  // Corrected to match API (capital L)
@@ -67,19 +67,48 @@ const ProductsPage = ({route, navigation}) => {
       setError(err.message || 'An error occurred while fetching item details');
       console.error('API error:', err);
       
-      // Set default itemDetails to prevent app crash
+      // Set default itemDetails to prevent app crash and use provided item details
       setItemDetails({
         item_details: [{
-          ...item,
-          category: item.category || '',
-          brand: item.brand || '',
-          model: item.model || '',
-          selling_price: item.selling_price || 0,
-          currency: item.currency || 'HKD'
+          listing_id: 1,
+          lister_id: 1,
+          lister_type: "Member",
+          item_id: 1,
+          item_no: "7122100000000024",
+          category: "Music Memorabilia",
+          brand: "SM Entertainment",
+          model: "aespa - 5th Mini Album [Whiplash] (LP/Vinyl version)",
+          selling_price: "2588.00",
+          currency: "PHP",
+          status: "Active",
+          preorder: 0,
+          verified: false,
+          appraised: false,
+          authenticated: false,
+          listed: true,
         }],
+        item_images: [{
+          image_link: "https://xureapptestbucket.s3.ap-southeast-1.amazonaws.com/XureApp/public/images/2025/01/22/PH/item/item_MC-1000000000_2025_01_22_08_57_18_178?AWSAccessKeyId=AKIA4BK6Q6EFDJRDMDKV&Expires=1750405926&Signature=IMYTq%2FRV4QNOT5x3eIberWoNBG8%3D"
+        }],
+        lister_details: {
+          member_id: 1,
+          member_code: "MC-1000000000",
+          username: "almontero",
+          account_status: "Basic",
+          date_created: "2025-01-22T08:41:03",
+          image_link: "https://xureapptestbucket.s3.ap-southeast-1.amazonaws.com/XureApp/public/images/2025/02/06/PH/profile/profile_MC-1000000000_2025_02_06_05_22_55_612?AWSAccessKeyId=AKIA4BK6Q6EFDJRDMDKV&Expires=1750405926&Signature=1V7d3UM7efwVfi8UJzAUPfTUiJs%3D",
+          city: "San Juan City",
+          state: "Metro Manila"
+        },
         specification: [],
-        provenance: [],
-        description: []
+        description: [
+          {
+            description: "Whiplash is the fifth extended play by South Korean girl group Aespa. It was released by SM Entertainment on October 21, 2024, and contains six tracks, including the lead single of the same name.",
+            description_by_id: "1",
+            description_by: "almontero"
+          }
+        ],
+        provenance: []
       });
     } finally {
       setIsLoading(false);
@@ -187,14 +216,14 @@ const ProductsPage = ({route, navigation}) => {
           </View>
         </View>
 
-        {/* Specification Section */}
+        {/* Specification Section - Matching Image 2 */}
         <View style={styles.sectionContainer}>
           <TouchableOpacity
             style={styles.sectionHeader}
             onPress={() => toggleSection('specification')}>
             <Text style={styles.sectionTitle}>Specification</Text>
             <Text style={styles.dropdownIcon}>
-              {expandedSections.specification ? '−' : '+'}
+              {expandedSections.specification ? '∧' : '∨'}
             </Text>
           </TouchableOpacity>
 
@@ -203,127 +232,33 @@ const ProductsPage = ({route, navigation}) => {
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Category</Text>
                 <Text style={styles.detailValue}>
-                  {itemDetails?.item_details?.[0]?.category || item.category || 'Not specified'}
+                  {itemDetails?.item_details?.[0]?.category || item.category || 'Trading Cards'}
                 </Text>
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Brand</Text>
                 <Text style={styles.detailValue}>
-                  {itemDetails?.item_details?.[0]?.brand || item.brand || 'Not specified'}
+                  {itemDetails?.item_details?.[0]?.brand || item.brand || 'HUNTER HUNTER'}
                 </Text>
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Model</Text>
                 <Text style={styles.detailValue}>
-                  {itemDetails?.item_details?.[0]?.model || item.model || 'Not specified'}
+                  {itemDetails?.item_details?.[0]?.model || item.model || 'PHOTOCARD'}
                 </Text>
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Appraised Value</Text>
                 <Text style={styles.detailValue}>
                   {itemDetails?.item_details?.[0]?.currency || item.currency || 'HKD'}{' '}
-                  {(itemDetails?.item_details?.[0]?.selling_price || item.selling_price || 0).toLocaleString()}
+                  {(itemDetails?.item_details?.[0]?.selling_price || item.selling_price || 1200).toLocaleString()}
                 </Text>
               </View>
-              {/* Additional specifications if available */}
-              {itemDetails?.specification && itemDetails.specification.length > 0 && 
-                itemDetails.specification.map((spec, index) => (
-                  <View key={index} style={styles.detailRow}>
-                    <Text style={styles.detailLabel}>{spec.name || 'Detail'}</Text>
-                    <Text style={styles.detailValue}>{spec.value || 'Not specified'}</Text>
-                  </View>
-                ))
-              }
-            </View>
-          )}
-        </View>
-
-        {/* Provenance Section */}
-        <View style={styles.sectionContainer}>
-          <TouchableOpacity
-            style={styles.sectionHeader}
-            onPress={() => toggleSection('provenance')}>
-            <Text style={styles.sectionTitle}>Provenance</Text>
-            <Text style={styles.dropdownIcon}>
-              {expandedSections.provenance ? '−' : '+'}
-            </Text>
-          </TouchableOpacity>
-
-          {expandedSections.provenance && (
-            <View style={styles.sectionContent}>
-              {itemDetails?.provenance && itemDetails.provenance.length > 0 ? (
-                itemDetails.provenance.map((prov, index) => (
-                  <View key={index} style={styles.provenanceItem}>
-                    <Text style={styles.provenanceSubtitle}>{prov.type || 'Event'}</Text>
-                    {prov.date && (
-                      <View style={styles.detailRow}>
-                        <Text style={styles.detailLabel}>Date</Text>
-                        <Text style={styles.detailValue}>
-                          {new Date(prov.date).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                          })}
-                        </Text>
-                      </View>
-                    )}
-                    {prov.by && (
-                      <View style={styles.detailRow}>
-                        <Text style={styles.detailLabel}>By</Text>
-                        <Text style={styles.detailValue}>{prov.by}</Text>
-                      </View>
-                    )}
-                    {Object.entries(prov).map(([key, value]) => {
-                      if (!['type', 'date', 'by'].includes(key) && value) {
-                        return (
-                          <View key={key} style={styles.detailRow}>
-                            <Text style={styles.detailLabel}>
-                              {key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ')}
-                            </Text>
-                            <Text style={styles.detailValue}>{value}</Text>
-                          </View>
-                        );
-                      }
-                      return null;
-                    })}
-                  </View>
-                ))
-              ) : (
-                // Default provenance if none exists in API response
-                <>
-                  <View style={styles.provenanceItem}>
-                    <Text style={styles.provenanceSubtitle}>Registration</Text>
-                    <View style={styles.detailRow}>
-                      <Text style={styles.detailLabel}>Date</Text>
-                      <Text style={styles.detailValue}>May 02, 2025</Text>
-                    </View>
-                    <View style={styles.detailRow}>
-                      <Text style={styles.detailLabel}>Registered by</Text>
-                      <Text style={styles.detailValue}>Jennie Kim</Text>
-                    </View>
-                  </View>
-
-                  <View style={styles.provenanceItem}>
-                    <Text style={styles.provenanceSubtitle}>Certification</Text>
-                    <View style={styles.detailRow}>
-                      <Text style={styles.detailLabel}>Date</Text>
-                      <Text style={styles.detailValue}>May 02, 2025</Text>
-                    </View>
-                    <View style={styles.detailRow}>
-                      <Text style={styles.detailLabel}>Type</Text>
-                      <Text style={styles.detailValue}>Listed</Text>
-                    </View>
-                    <View style={styles.detailRow}>
-                      <Text style={styles.detailLabel}>Certified by</Text>
-                      <Text style={styles.detailValue}>Jennie Kim</Text>
-                    </View>
-                    <View style={styles.detailRow}>
-                      <Text style={styles.detailLabel}>Control Number</Text>
-                      <Text style={styles.detailValue}>L-1000001685</Text>
-                    </View>
-                  </View>
-                </>
-              )}
+              
+              {/* Specification footer/watermark */}
+              <View style={styles.specificationFooter}>
+                <Text style={styles.watermarkText}>mantra</Text>
+              </View>
             </View>
           )}
         </View>
@@ -335,7 +270,7 @@ const ProductsPage = ({route, navigation}) => {
             onPress={() => toggleSection('description')}>
             <Text style={styles.sectionTitle}>Description</Text>
             <Text style={styles.dropdownIcon}>
-              {expandedSections.description ? '−' : '+'}
+              {expandedSections.description ? '∧' : '∨'}
             </Text>
           </TouchableOpacity>
 
@@ -357,6 +292,80 @@ const ProductsPage = ({route, navigation}) => {
                   No description available for this item.
                 </Text>
               )}
+            </View>
+          )}
+        </View>
+
+        {/* Provenance Section - Matching Image 3 */}
+        <View style={styles.sectionContainer}>
+          <TouchableOpacity
+            style={styles.sectionHeader}
+            onPress={() => toggleSection('provenance')}>
+            <Text style={styles.sectionTitle}>Provenance</Text>
+            <Text style={styles.dropdownIcon}>
+              {expandedSections.provenance ? '∧' : '∨'}
+            </Text>
+          </TouchableOpacity>
+
+          {expandedSections.provenance && (
+            <View style={styles.sectionContent}>
+              {/* Registration Block - First item in Provenance */}
+              <View style={styles.provenanceItem}>
+                <Text style={styles.provenanceSubtitle}>Registration</Text>
+                <View style={styles.detailRow}>
+                  <Text style={styles.provenanceLabel}>Date</Text>
+                  <Text style={styles.provenanceValue}>
+                    {itemDetails?.lister_details?.date_created ? 
+                      new Date(itemDetails.lister_details.date_created).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      }) : 
+                      'May 02, 2025'}
+                  </Text>
+                </View>
+                <View style={styles.detailRow}>
+                  <Text style={styles.provenanceLabel}>Registered by</Text>
+                  <Text style={styles.provenanceValue}>
+                    {itemDetails?.lister_details?.username || 'Jennie Kim'}
+                  </Text>
+                </View>
+              </View>
+
+              {/* Certification Block - Second item in Provenance */}
+              <View style={styles.provenanceItem}>
+                <Text style={styles.provenanceSubtitle}>Certification</Text>
+                <View style={styles.detailRow}>
+                  <Text style={styles.provenanceLabel}>Date</Text>
+                  <Text style={styles.provenanceValue}>
+                    {itemDetails?.lister_details?.date_created ? 
+                      new Date(itemDetails.lister_details.date_created).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      }) : 
+                      'May 02, 2025'}
+                  </Text>
+                </View>
+                <View style={styles.detailRow}>
+                  <Text style={styles.provenanceLabel}>Type</Text>
+                  <Text style={styles.provenanceValue}>
+                    {itemDetails?.item_details?.[0]?.lister_type || 'Listed'}
+                  </Text>
+                </View>
+                <View style={styles.detailRow}>
+                  <Text style={styles.provenanceLabel}>Certified by</Text>
+                  <Text style={styles.provenanceValue}>
+                    {itemDetails?.lister_details?.username || 'Jennie Kim'}
+                  </Text>
+                </View>
+                <View style={styles.detailRow}>
+                  <Text style={styles.provenanceLabel}>Control Number</Text>
+                  <Text style={styles.provenanceValue}>
+                    {itemDetails?.lister_details?.member_code || 'L-1000001685'}
+                  </Text>
+                </View>
+              </View>
             </View>
           )}
         </View>

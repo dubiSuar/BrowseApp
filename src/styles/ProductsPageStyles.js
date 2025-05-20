@@ -221,6 +221,19 @@ descriptionBy: {
   textAlign: 'right',
   color: '#666',
 },
+ specificationFooter: {
+    alignItems: 'flex-end',
+    marginTop: 10,
+    paddingTop: 5,
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+  },
+  watermarkText: {
+    fontSize: 12,
+    fontStyle: 'italic',
+    color: '#999',
+  }
+
 });
 
 export default styles;
