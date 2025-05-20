@@ -364,7 +364,9 @@ const BrowseProducts = () => {
           </View>
 
           <ScrollView>
+             {/* =0=0=0=0=0=0=0=0=0=0=0=0=0=0=0*/}
             {/* category shits */}
+             {/* =0=0=0=0=0=0=0=0=0=0=0=0=0=0=0*/}
             <View style={styles.filterSection}>
               <Text style={styles.sectionTitle}>Category</Text>
               <TouchableOpacity
@@ -411,6 +413,9 @@ const BrowseProducts = () => {
               )}
             </View>
 
+             {/* =0=0=0=0=0=0=0=0=0=0=0=0=0=0=0*/}
+              {/* Ascend descend buttonsss */}
+               {/* =0=0=0=0=0=0=0=0=0=0=0=0=0=0=0*/}
             <View style={styles.filterSection}>
               <Text style={styles.sectionTitle}>Sort</Text>
               <View style={styles.sortOptions}>
