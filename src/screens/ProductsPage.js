@@ -65,49 +65,8 @@ const ProductsPage = ({ route, navigation }) => {
       setError(err.message || 'An error occurred while fetching item details');
       console.error('API error:', err);
 
-      // Set default itemDetails to prevent app crash and use provided item details
-      setItemDetails({
-        item_details: [{
-          listing_id: 1,
-          lister_id: 1,
-          lister_type: "Member",
-          item_id: 1,
-          item_no: "7122100000000024",
-          category: "Music Memorabilia",
-          brand: "SM Entertainment",
-          model: "aespa - 5th Mini Album [Whiplash] (LP/Vinyl version)",
-          selling_price: "2588.00",
-          currency: "PHP",
-          status: "Active",
-          preorder: 0,
-          verified: false,
-          appraised: false,
-          authenticated: false,
-          listed: true,
-        }],
-        item_images: [{
-          image_link: "https://xureapptestbucket.s3.ap-southeast-1.amazonaws.com/XureApp/public/images/2025/01/22/PH/item/item_MC-1000000000_2025_01_22_08_57_18_178?AWSAccessKeyId=AKIA4BK6Q6EFDJRDMDKV&Expires=1750405926&Signature=IMYTq%2FRV4QNOT5x3eIberWoNBG8%3D"
-        }],
-        lister_details: {
-          member_id: 1,
-          member_code: "MC-1000000000",
-          username: "almontero",
-          account_status: "Basic",
-          date_created: "2025-01-22T08:41:03",
-          image_link: "https://xureapptestbucket.s3.ap-southeast-1.amazonaws.com/XureApp/public/images/2025/02/06/PH/profile/profile_MC-1000000000_2025_02_06_05_22_55_612?AWSAccessKeyId=AKIA4BK6Q6EFDJRDMDKV&Expires=1750405926&Signature=1V7d3UM7efwVfi8UJzAUPfTUiJs%3D",
-          city: "San Juan City",
-          state: "Metro Manila"
-        },
-        specification: [],
-        description: [
-          {
-            description: "Whiplash is the fifth extended play by South Korean girl group Aespa. It was released by SM Entertainment on October 21, 2024, and contains six tracks, including the lead single of the same name.",
-            description_by_id: "1",
-            description_by: "almontero"
-          }
-        ],
-        provenance: []
-      });
+      // Set default itemDetails 
+  
     } finally {
       setIsLoading(false);
     }
