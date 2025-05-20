@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,14 +6,13 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
 import BottomNavigationBar from '../components/BottomNavbar';
-import {styles} from '../styles/ProductsPageStyles';
+import { styles } from '../styles/ProductsPageStyles';
 import axios from 'axios';
 
-const ProductsPage = ({route, navigation}) => {
-  const {item} = route.params;
+const ProductsPage = ({ route, navigation }) => {
+  const { item } = route.params;
   const [expandedSections, setExpandedSections] = useState({
     specification: true,
     provenance: false,
@@ -38,19 +37,18 @@ const ProductsPage = ({route, navigation}) => {
     setError(null);
 
     try {
-      // Fixed parameter names to match the API requirements
       const params = {
-        current_owner_code: item.lister_code || "MC-1000000000", // Changed from member_code to current_owner_code
-        current_owner_type: item.lister_type || "Xpert", 
+        current_owner_code: item.lister_code || "MC-1000000000",
+        current_owner_type: item.lister_type || "Xpert",
         item_id: Number(item.item_id),
-        listing_id: Number(item.listing_id),  // Corrected to match API (capital L)
+        listing_id: Number(item.listing_id),
         token: API_TOKEN,
         user_type: "Xpert",
         version_number: "2.2.6"
       };
-      
+
       console.log('Sending parameters to API:', JSON.stringify(params, null, 2));
-      
+
       const response = await axios.post(API_ENDPOINT, params);
 
       if (response.status === 200) {
@@ -66,7 +64,7 @@ const ProductsPage = ({route, navigation}) => {
     } catch (err) {
       setError(err.message || 'An error occurred while fetching item details');
       console.error('API error:', err);
-      
+
       // Set default itemDetails to prevent app crash and use provided item details
       setItemDetails({
         item_details: [{
@@ -154,15 +152,15 @@ const ProductsPage = ({route, navigation}) => {
             />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Item Details</Text>
-          <View style={{width: 30}} />
+          <View style={{ width: 30 }} />
         </View>
 
         {/* Product Image */}
         <Image
           source={{
-            uri: itemDetails?.item_images?.[0]?.image_link || 
-                 item.item_image || 
-                 'https://picsum.photos/300/300',
+            uri: itemDetails?.item_images?.[0]?.image_link ||
+              item.item_image ||
+              'https://picsum.photos/300/300',
           }}
           style={styles.productImage}
           resizeMode="contain"
@@ -185,9 +183,9 @@ const ProductsPage = ({route, navigation}) => {
           <View style={styles.sellerContainer}>
             <Image
               source={{
-                uri: itemDetails?.lister_details?.image_link || 
-                     item.lister_image || 
-                     'https://randomuser.me/api/portraits/women/44.jpg',
+                uri: itemDetails?.lister_details?.image_link ||
+                  item.lister_image ||
+                  'https://randomuser.me/api/portraits/women/44.jpg',
               }}
               style={styles.sellerImage}
             />
@@ -196,27 +194,27 @@ const ProductsPage = ({route, navigation}) => {
                 {itemDetails?.lister_details?.username || item.lister_name || 'Unknown seller'}
               </Text>
               <Text style={styles.sellerId}>
-                {itemDetails?.lister_details?.member_code || 
+                {itemDetails?.lister_details?.xpert_code || 
                 `AC-${item.lister_id || '0000000000'}`}
               </Text>
               <Text style={styles.sellerLocation}>
-                {itemDetails?.lister_details?.city && itemDetails?.lister_details?.state ? 
-                  `${itemDetails.lister_details.city}, ${itemDetails.lister_details.state}` : 
+                {itemDetails?.lister_details?.city && itemDetails?.lister_details?.state ?
+                  `${itemDetails.lister_details.city}, ${itemDetails.lister_details.state}` :
                   item.lister_location || 'Location not specified'}
               </Text>
               <Text style={styles.sellerJoined}>
-                Joined: {itemDetails?.lister_details?.date_created ? 
+                Joined: {itemDetails?.lister_details?.date_created ?
                   new Date(itemDetails.lister_details.date_created).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
-                  }) : 
+                  }) :
                   'January 2025'}
               </Text>
             </View>
           </View>
         </View>
 
-        {/* Specification Section - Matching Image 2 */}
+        {/* Specification Section */}
         <View style={styles.sectionContainer}>
           <TouchableOpacity
             style={styles.sectionHeader}
@@ -229,32 +227,12 @@ const ProductsPage = ({route, navigation}) => {
 
           {expandedSections.specification && (
             <View style={styles.sectionContent}>
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Category</Text>
-                <Text style={styles.detailValue}>
-                  {itemDetails?.item_details?.[0]?.category || item.category || 'Trading Cards'}
-                </Text>
-              </View>
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Brand</Text>
-                <Text style={styles.detailValue}>
-                  {itemDetails?.item_details?.[0]?.brand || item.brand || 'HUNTER HUNTER'}
-                </Text>
-              </View>
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Model</Text>
-                <Text style={styles.detailValue}>
-                  {itemDetails?.item_details?.[0]?.model || item.model || 'PHOTOCARD'}
-                </Text>
-              </View>
-              <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Appraised Value</Text>
-                <Text style={styles.detailValue}>
-                  {itemDetails?.item_details?.[0]?.currency || item.currency || 'HKD'}{' '}
-                  {(itemDetails?.item_details?.[0]?.selling_price || item.selling_price || 1200).toLocaleString()}
-                </Text>
-              </View>
-              
+              {itemDetails?.specification.map((spec, index) => (
+                <View key={index} style={styles.detailRow}>
+                  <Text style={styles.detailLabel}>{spec.label}</Text>
+                  <Text style={styles.detailValue}>{spec.value}</Text>
+                </View>
+              ))}
               {/* Specification footer/watermark */}
               <View style={styles.specificationFooter}>
                 <Text style={styles.watermarkText}>mantra</Text>
@@ -296,7 +274,7 @@ const ProductsPage = ({route, navigation}) => {
           )}
         </View>
 
-        {/* Provenance Section - Matching Image 3 */}
+        {/* Provenance Section */}
         <View style={styles.sectionContainer}>
           <TouchableOpacity
             style={styles.sectionHeader}
@@ -309,60 +287,60 @@ const ProductsPage = ({route, navigation}) => {
 
           {expandedSections.provenance && (
             <View style={styles.sectionContent}>
-              {/* Registration Block - First item in Provenance */}
+              {/* Registration Block */}
               <View style={styles.provenanceItem}>
                 <Text style={styles.provenanceSubtitle}>Registration</Text>
                 <View style={styles.detailRow}>
                   <Text style={styles.provenanceLabel}>Date</Text>
                   <Text style={styles.provenanceValue}>
-                    {itemDetails?.lister_details?.date_created ? 
-                      new Date(itemDetails.lister_details.date_created).toLocaleDateString('en-US', {
+                    {itemDetails?.provenance[0]?.date_created ?
+                      new Date(itemDetails.provenance[0].date_created).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric',
-                      }) : 
+                      }) :
                       'May 02, 2025'}
                   </Text>
                 </View>
                 <View style={styles.detailRow}>
                   <Text style={styles.provenanceLabel}>Registered by</Text>
                   <Text style={styles.provenanceValue}>
-                    {itemDetails?.lister_details?.username || 'Jennie Kim'}
+                    {itemDetails?.provenance[0]?.created_by_name || 'Unknown'}
                   </Text>
                 </View>
               </View>
 
-              {/* Certification Block - Second item in Provenance */}
+              {/* Certification Block */}
               <View style={styles.provenanceItem}>
                 <Text style={styles.provenanceSubtitle}>Certification</Text>
                 <View style={styles.detailRow}>
                   <Text style={styles.provenanceLabel}>Date</Text>
                   <Text style={styles.provenanceValue}>
-                    {itemDetails?.lister_details?.date_created ? 
-                      new Date(itemDetails.lister_details.date_created).toLocaleDateString('en-US', {
+                    {itemDetails?.provenance[1]?.date_created ?
+                      new Date(itemDetails.provenance[1].date_created).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric',
-                      }) : 
+                      }) :
                       'May 02, 2025'}
                   </Text>
                 </View>
                 <View style={styles.detailRow}>
                   <Text style={styles.provenanceLabel}>Type</Text>
                   <Text style={styles.provenanceValue}>
-                    {itemDetails?.item_details?.[0]?.lister_type || 'Listed'}
+                    {itemDetails?.provenance[1]?.provenance_type || 'Listed'}
                   </Text>
                 </View>
                 <View style={styles.detailRow}>
                   <Text style={styles.provenanceLabel}>Certified by</Text>
                   <Text style={styles.provenanceValue}>
-                    {itemDetails?.lister_details?.username || 'Jennie Kim'}
+                    {itemDetails?.provenance[1]?.created_by_name || 'Unknown'}
                   </Text>
                 </View>
                 <View style={styles.detailRow}>
                   <Text style={styles.provenanceLabel}>Control Number</Text>
                   <Text style={styles.provenanceValue}>
-                    {itemDetails?.lister_details?.member_code || 'L-1000001685'}
+                    {itemDetails?.provenance[1]?.control_number || 'L-1000001685'}
                   </Text>
                 </View>
               </View>
