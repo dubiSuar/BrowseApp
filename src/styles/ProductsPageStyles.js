@@ -197,6 +197,30 @@ sortText: {
 activeSortText: {
   color: '#fff',
 },
+loadingContainer: {
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+errorContainer: {
+  justifyContent: 'center',
+  alignItems: 'center',
+  padding: 20,
+},
+errorText: {
+  color: 'red',
+  marginBottom: 20,
+  textAlign: 'center',
+},
+retryText: {
+  color: '#6200ee',
+  fontWeight: 'bold',
+},
+descriptionBy: {
+  marginTop: 10,
+  fontStyle: 'italic',
+  textAlign: 'right',
+  color: '#666',
+},
 });
 
 export default styles;
