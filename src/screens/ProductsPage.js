@@ -201,37 +201,43 @@ const ProductsPage = ({ route, navigation }) => {
         </View>
 
         {/* Description Section */}
-        <View style={styles.sectionContainer}>
-          <TouchableOpacity
-            style={styles.sectionHeader}
-            onPress={() => toggleSection('description')}>
-            <Text style={styles.sectionTitle}>Description</Text>
-            <Text style={styles.dropdownIcon}>
-              {expandedSections.description ? '∧' : '∨'}
-            </Text>
-          </TouchableOpacity>
-
-          {expandedSections.description && (
-            <View style={styles.sectionContent}>
-              {itemDetails?.description && itemDetails.description.length > 0 ? (
-                itemDetails.description.map((desc, index) => (
-                  <View key={index} style={styles.descriptionItem}>
-                    <Text style={styles.descriptionText}>{desc.description}</Text>
-                    {desc.description_by && (
-                      <Text style={styles.descriptionBy}>
-                        - {desc.description_by}
-                      </Text>
-                    )}
-                  </View>
-                ))
-              ) : (
-                <Text style={styles.descriptionText}>
-                  No description available for this item.
-                </Text>
-              )}
-            </View>
-          )}
-        </View>
+      {/* Description Section */}
+<View style={styles.sectionContainer}>
+  <TouchableOpacity
+    style={styles.sectionHeader}
+    onPress={() => toggleSection('description')}>
+    <Text style={styles.sectionTitle}>Description</Text>
+    <Text style={styles.dropdownIcon}>
+      {expandedSections.description ? '∧' : '∨'}
+    </Text>
+  </TouchableOpacity>
+  {expandedSections.description && (
+    <View style={styles.sectionContent}>
+      {itemDetails?.description && itemDetails.description.length > 0 ? (
+        // Map through unique description items
+        Array.from(new Set(itemDetails.description.map(item => item.description)))
+          .map((uniqueDesc, index) => {
+            // Find the first entry with this description to get the attribution
+            const descItem = itemDetails.description.find(d => d.description === uniqueDesc);
+            return (
+              <View key={index} style={styles.descriptionItem}>
+                <Text style={styles.descriptionText}>{uniqueDesc}</Text>
+                {descItem && descItem.description_by && (
+                  <Text style={styles.descriptionBy}>
+                    - {descItem.description_by}
+                  </Text>
+                )}
+              </View>
+            );
+          })
+      ) : (
+        <Text style={styles.descriptionText}>
+          No description available for this item.
+        </Text>
+      )}
+    </View>
+  )}
+</View>
 
         {/* Provenance Section */}
         <View style={styles.sectionContainer}>
