@@ -355,4 +355,18 @@ categoryDropdownItem: {
   borderBottomColor: '#eee',
 },
 
+modalScrollView: {
+  flex: 1,
+},
+categoryDropdownListContainer: {
+  maxHeight: 150, // Adjust this value as needed
+  borderWidth: 1,
+  borderColor: '#ddd',
+  borderRadius: 4,
+  marginBottom: 10,
+},
+categoryDropdownScrollView: {
+  flex: 1,
+},
+
 });
