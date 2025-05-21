@@ -108,6 +108,9 @@ const ProductSkeleton = () => {
   );
 };
 
+//=0=0=0=0=0=0=0=0=0=0=0=0
+// filters shits
+//=0=0=0=0=0=0=0=0=0=0=0=0
 const FilterModal = ({
   visible,
   onClose,
@@ -151,7 +154,7 @@ const FilterModal = ({
   const handleCategorySelect = (category) => {
     setLocalSelectedCategory(category);
     setShowCategoryDropdown(false);
-    toggleCategory(category); // Add the category to selected categories
+    toggleCategory(category); 
   };
 
   return (
@@ -203,25 +206,27 @@ const FilterModal = ({
 
             {showCategoryDropdown && (
               <View style={styles.categoryDropdownList}>
-                {categories.map(category => (
-                  <TouchableOpacity
-                    key={category}
-                    style={[
-                      styles.categoryDropdownItem,
-                      selectedCategories.includes(category) &&
-                        styles.selectedCategory,
-                    ]}
-                    onPress={() => handleCategorySelect(category)}>
-                    <Text
-                      style={
-                        selectedCategories.includes(category)
-                          ? styles.selectedCategoryText
-                          : styles.categoryText
-                      }>
-                      {category}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
+                <ScrollView nestedScrollEnabled={true} style={{maxHeight: 150}}>
+                  {categories.map(category => (
+                    <TouchableOpacity
+                      key={category}
+                      style={[
+                        styles.categoryDropdownItem,
+                        selectedCategories.includes(category) &&
+                          styles.selectedCategory,
+                      ]}
+                      onPress={() => handleCategorySelect(category)}>
+                      <Text
+                        style={
+                          selectedCategories.includes(category)
+                            ? styles.selectedCategoryText
+                            : styles.categoryText
+                        }>
+                        {category}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
               </View>
             )}
           </View>
@@ -357,7 +362,9 @@ const FilterModal = ({
     </Modal>
   );
 };
-
+//=0=0=0=0=0=0=0=0=0=0=0=0
+//products
+//=0=0=0=0=0=0=0=0=0=0=0=0
 const BrowseProducts = () => {
   const navigation = useNavigation();
   const [products, setProducts] = useState([]);
@@ -520,6 +527,9 @@ const BrowseProducts = () => {
     ) : null;
   };
 
+  //=0=0=0=0=0=0=0=0=0=0=0=0
+  //pag render ng items
+  //=0=0=0=0=0=0=0=0=0=0=0=0
   const renderProduct = ({item}) => {
     console.log('Product Item Parameters:', JSON.stringify(item, null, 2));
     return (
