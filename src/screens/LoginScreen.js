@@ -42,10 +42,10 @@ const LoginScreen = ({ navigation }) => {
       const data = await response.json();
 
       if (response.ok) {
-        // Assuming the API returns a token in the response
-        const token = data.token; // Adjust this based on the actual API response structure
+        // TOKEN RETURN
+        const token = data.token; 
         
-        // Navigate to BrowseProducts and pass the token
+        // PASS TOKEN TO HOME PAGE
         navigation.navigate('BrowseProducts', { token });
       } else {
         Alert.alert('Login Failed', data.message || 'Invalid credentials');

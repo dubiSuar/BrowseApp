@@ -44,6 +44,14 @@ export const styles = StyleSheet.create({
   searchText: {
     color: '#999',
   },
+  searchInput: {
+    backgroundColor: '#f5f5f5',
+    borderRadius: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    marginHorizontal: 16,
+    marginBottom: 16,
+},
   discoveryHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',

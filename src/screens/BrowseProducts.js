@@ -109,7 +109,7 @@ const ProductSkeleton = () => {
 };
 
 //=0=0=0=0=0=0=0=0=0=0=0=0
-// filters shits
+// filters 
 //=0=0=0=0=0=0=0=0=0=0=0=0
 const FilterModal = ({
   visible,
@@ -379,6 +379,12 @@ const BrowseProducts = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [priceRange, setPriceRange] = useState({min: '', max: ''});
   const [sortOrder, setSortOrder] = useState('');
+  const [showInput, setShowInput] = useState(false);
+
+  //search
+  const [query, setQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState(query);
 
   const categories = [
     'Bags',
@@ -410,14 +416,19 @@ const BrowseProducts = () => {
         : [...prev, category],
     );
   };
+    const applyFilters = () => {
+      setShowFilterModal(false);
+      setShowSkeleton(true);
+      setLastListingId('');
+      setHasMore(true);
 
-  const applyFilters = () => {
-    setShowFilterModal(false);
-    setShowSkeleton(true);
-    setLastListingId('');
-    setHasMore(true);
-    fetchProducts();
+      fetchProducts(false, {
+        selectedCategories,
+        priceRange,
+        sortOrder,
+      });
   };
+
 
   const clearFilters = () => {
     setSelectedCategories([]);
@@ -425,23 +436,26 @@ const BrowseProducts = () => {
     setSortOrder('');
   };
 
-  const fetchProducts = async (loadMore = false) => {
+  const fetchProducts = async (loadMore = false, filters = {}) => {
     if ((isLoading && !loadMore) || (loadMore && !hasMore)) return;
 
     loadMore ? setIsLoadingMore(true) : setIsLoading(true);
     setError(null);
 
     try {
-      const response = await axios.post(API_ENDPOINT, {
+    const response = await axios.post(API_ENDPOINT, {
         ...API_PARAMS,
         last_listing_id: loadMore ? lastListingId : '',
-        categories: selectedCategories,
-        min: priceRange.min,
-        max: priceRange.max,
-        sort: sortOrder,
+        categories: filters.selectedCategories || selectedCategories,
+        min: filters.priceRange?.min ?? priceRange.min,
+        max: filters.priceRange?.max ?? priceRange.max,
+        sort: filters.sortOrder || sortOrder,
+         search: filters.searchQuery ?? searchQuery, 
       });
 
+
       if (response.status === 200) {
+         console.log('API response:', response.data);
         if (
           response.data &&
           response.data.xchange &&
@@ -501,10 +515,34 @@ const BrowseProducts = () => {
     fetchProducts();
   };
 
+ const handleSearch = () => {
+  setLastListingId('');  
+  setHasMore(true);
+  fetchProducts(false, { searchQuery: query }); 
+  setShowInput(false);  
+};
+
   useEffect(() => {
     setShowSkeleton(true);
     fetchProducts();
   }, []);
+
+  //Instant Search
+  useEffect(() => {
+  const handler = setTimeout(() => {
+    setDebouncedQuery(query);
+  }, 500); 
+
+  return () => {
+    clearTimeout(handler); 
+  };
+}, [query]);
+
+useEffect(() => {
+  setLastListingId('');
+  setHasMore(true);
+  fetchProducts(false, { searchQuery: debouncedQuery });
+}, [debouncedQuery]);
 
   const handleLoadMore = () => {
     if (!isLoadingMore && hasMore && products.length > 0) {
@@ -588,9 +626,26 @@ const BrowseProducts = () => {
         </View>
       </View>
 
-      <TouchableOpacity style={styles.searchBar}>
-        <Text style={styles.searchText}>Tell us what you're looking for.</Text>
-      </TouchableOpacity>
+        {showInput ? (
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search for something..."
+            value={query}
+            onChangeText={setQuery}
+            autoFocus
+            onSubmitEditing={() => {
+              handleSearch();
+              setShowInput(false); // close input after search
+            }}
+            returnKeyType="search"
+          />
+        ) : (
+          <TouchableOpacity style={styles.searchBar} onPress={() => setShowInput(true)}>
+            <Text style={styles.searchText}>
+              {query.trim() === '' ? "Tell us what you're looking for." : query}
+            </Text>
+          </TouchableOpacity>
+        )}
 
       <View style={styles.discoveryHeader}>
         <Text style={styles.discoveryText}>Daily Discovery</Text>
