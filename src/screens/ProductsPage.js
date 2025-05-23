@@ -22,7 +22,7 @@ const ProductsPage = ({ route, navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // XchangeDetails API endpoint and parameters
+  // XchangeDetails
   const API_ENDPOINT =
     'https://pk9blqxffi.execute-api.us-east-1.amazonaws.com/xdeal/XchangeDetails';
   const API_TOKEN =
@@ -64,8 +64,6 @@ const ProductsPage = ({ route, navigation }) => {
     } catch (err) {
       setError(err.message || 'An error occurred while fetching item details');
       console.error('API error:', err);
-
-      // Set default itemDetails 
   
     } finally {
       setIsLoading(false);
@@ -214,10 +212,10 @@ const ProductsPage = ({ route, navigation }) => {
   {expandedSections.description && (
     <View style={styles.sectionContent}>
       {itemDetails?.description && itemDetails.description.length > 0 ? (
-        // Map through unique description items
+        // Map 
         Array.from(new Set(itemDetails.description.map(item => item.description)))
           .map((uniqueDesc, index) => {
-            // Find the first entry with this description to get the attribution
+            // Finding Entry
             const descItem = itemDetails.description.find(d => d.description === uniqueDesc);
             return (
               <View key={index} style={styles.descriptionItem}>

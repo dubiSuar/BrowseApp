@@ -109,7 +109,7 @@ const ProductSkeleton = () => {
 };
 
 //=0=0=0=0=0=0=0=0=0=0=0=0
-// filters shits
+// filters 
 //=0=0=0=0=0=0=0=0=0=0=0=0
 const FilterModal = ({
   visible,
@@ -379,6 +379,13 @@ const BrowseProducts = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [priceRange, setPriceRange] = useState({min: '', max: ''});
   const [sortOrder, setSortOrder] = useState('');
+  const [showInput, setShowInput] = useState(false);
+  const [filtersRelaxed, setFiltersRelaxed] = useState(false);
+
+  //search
+  const [query, setQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState(query);
 
   const categories = [
     'Bags',
@@ -410,14 +417,19 @@ const BrowseProducts = () => {
         : [...prev, category],
     );
   };
+    const applyFilters = () => {
+      setShowFilterModal(false);
+      setShowSkeleton(true);
+      setLastListingId('');
+      setHasMore(true);
 
-  const applyFilters = () => {
-    setShowFilterModal(false);
-    setShowSkeleton(true);
-    setLastListingId('');
-    setHasMore(true);
-    fetchProducts();
+      fetchProducts(false, {
+        selectedCategories,
+        priceRange,
+        sortOrder,
+      });
   };
+
 
   const clearFilters = () => {
     setSelectedCategories([]);
@@ -425,86 +437,116 @@ const BrowseProducts = () => {
     setSortOrder('');
   };
 
-  const fetchProducts = async (loadMore = false) => {
-    if ((isLoading && !loadMore) || (loadMore && !hasMore)) return;
+ const fetchProducts = async (loadMore = false, filters = {}) => {
+  if ((isLoading && !loadMore) || (loadMore && !hasMore)) return;
 
-    loadMore ? setIsLoadingMore(true) : setIsLoading(true);
-    setError(null);
+  loadMore ? setIsLoadingMore(true) : setIsLoading(true);
+  setError(null);
 
-    try {
-      const response = await axios.post(API_ENDPOINT, {
-        ...API_PARAMS,
-        last_listing_id: loadMore ? lastListingId : '',
-        categories: selectedCategories,
-        min: priceRange.min,
-        max: priceRange.max,
-        sort: sortOrder,
-      });
+  try {
+    const response = await axios.post(API_ENDPOINT, {
+      ...API_PARAMS,
+      last_listing_id: loadMore ? lastListingId : '',
+      categories: filters.selectedCategories ?? selectedCategories,
+      min: filters.priceRange?.min ?? priceRange.min,
+      max: filters.priceRange?.max ?? priceRange.max,
+      sort: filters.sortOrder ?? sortOrder,
+      search: filters.searchQuery ?? searchQuery,
+    });
 
-      if (response.status === 200) {
-        if (
-          response.data &&
-          response.data.xchange &&
-          Array.isArray(response.data.xchange)
-        ) {
+    if (response.status === 200) {
+      const data = response.data;
+
+      if (data?.xchange && Array.isArray(data.xchange)) {
+        if (data.xchange.length > 0) {
           setProducts(prevProducts =>
-            loadMore
-              ? [...prevProducts, ...response.data.xchange]
-              : response.data.xchange,
+            loadMore ? [...prevProducts, ...data.xchange] : data.xchange
           );
 
-          if (response.data.xchange.length > 0) {
-            setLastListingId(
-              response.data.xchange[response.data.xchange.length - 1]
-                .listing_id,
-            );
-          }
-
-          setHasMore(response.data.xchange.length > 0);
-        } else if (
-          typeof response.data === 'string' &&
-          (response.data.includes('Account is suspended') ||
-            response.data.includes('Account is deleted') ||
-            response.data.includes('Version not compatible') ||
-            response.data.includes('IDX12741'))
-        ) {
-          setError(response.data);
-          Alert.alert(
-            'Error',
-            `${response.data}. You will now be logged out of this app.`,
-          );
-          setProducts([]);
+          setLastListingId(data.xchange[data.xchange.length - 1].listing_id);
+          setHasMore(true);
         } else {
-          setError('Invalid response format from server');
-          setProducts([]);
+          if (!filtersRelaxed) {
+            console.log('Auto-relaxing filters...');
+            setFiltersRelaxed(true);
+            setLastListingId('');
+            fetchProducts(false, {
+              searchQuery: '',
+              selectedCategories: [],
+              
+            });
+            return;
+          } else {
+            setHasMore(false);
+          }
         }
+      } else if (typeof data === 'string' &&
+        (data.includes('Account is suspended') ||
+          data.includes('Account is deleted') ||
+          data.includes('Version not compatible') ||
+          data.includes('IDX12741'))) {
+        setError(data);
+        Alert.alert('Error', `${data}. You will now be logged out of this app.`);
+        setProducts([]);
       } else {
-        setError('Failed to fetch products');
+        setError('Invalid response format from server');
         setProducts([]);
       }
-    } catch (err) {
-      setError(err.message || 'An error occurred while fetching products');
+    } else {
+      setError('Failed to fetch products');
       setProducts([]);
-      console.error('API error:', err);
-    } finally {
-      loadMore ? setIsLoadingMore(false) : setIsLoading(false);
-      setIsRefreshing(false);
-      setShowSkeleton(false);
     }
-  };
+  } catch (err) {
+    setError(err.message || 'An error occurred while fetching products');
+    setProducts([]);
+    console.error('API error:', err);
+  } finally {
+    loadMore ? setIsLoadingMore(false) : setIsLoading(false);
+    setIsRefreshing(false);
+    setShowSkeleton(false);
+  }
+};
 
-  const handleRefresh = () => {
-    setIsRefreshing(true);
-    setShowSkeleton(true);
-    setLastListingId('');
-    setHasMore(true);
-    fetchProducts();
-  };
+
+const handleRefresh = () => {
+  setIsRefreshing(true);
+  setShowSkeleton(true);
+  setLastListingId('');
+  setHasMore(true);
+  setFiltersRelaxed(false); 
+  fetchProducts();
+};
+
+const handleSearch = () => {
+  setLastListingId('');
+  setHasMore(true);
+  setFiltersRelaxed(false);
+  fetchProducts(false, { searchQuery: query });
+  setShowInput(false);
+};
+
 
   useEffect(() => {
     setShowSkeleton(true);
     fetchProducts();
   }, []);
+
+  //Instant Search
+  useEffect(() => {
+  const handler = setTimeout(() => {
+    setDebouncedQuery(query);
+  }, 500); 
+
+  return () => {
+    clearTimeout(handler); 
+  };
+}, [query]);
+
+useEffect(() => {
+  setLastListingId('');
+  setHasMore(true);
+  fetchProducts(false, { searchQuery: debouncedQuery });
+}, [debouncedQuery]);
 
   const handleLoadMore = () => {
     if (!isLoadingMore && hasMore && products.length > 0) {
@@ -588,9 +630,26 @@ const BrowseProducts = () => {
         </View>
       </View>
 
-      <TouchableOpacity style={styles.searchBar}>
-        <Text style={styles.searchText}>Tell us what you're looking for.</Text>
-      </TouchableOpacity>
+        {showInput ? (
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search for something..."
+            value={query}
+            onChangeText={setQuery}
+            autoFocus
+            onSubmitEditing={() => {
+              handleSearch();
+              setShowInput(false); // close input after search
+            }}
+            returnKeyType="search"
+          />
+        ) : (
+          <TouchableOpacity style={styles.searchBar} onPress={() => setShowInput(true)}>
+            <Text style={styles.searchText}>
+              {query.trim() === '' ? "Tell us what you're looking for." : query}
+            </Text>
+          </TouchableOpacity>
+        )}
 
       <View style={styles.discoveryHeader}>
         <Text style={styles.discoveryText}>Daily Discovery</Text>
