@@ -507,13 +507,13 @@ const BrowseProducts = () => {
   const [sortOrder, setSortOrder] = useState('');
   const [showInput, setShowInput] = useState(false);
 
-  // Brand and Model data
+
   const [brands, setBrands] = useState([]);
   const [models, setModels] = useState([]);
   const [loadingBrands, setLoadingBrands] = useState(false);
   const [loadingModels, setLoadingModels] = useState(false);
 
-  //search
+  
   const [query, setQuery] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState(query);
@@ -634,10 +634,10 @@ const BrowseProducts = () => {
     setError(null);
 
     try {
-      // Build filter parameters
+     
       let filterCategories = filters.selectedCategories || selectedCategories;
       
-      // Add brand filtering logic
+  
       let brandFilter = filters.selectedBrands || selectedBrands;
       let modelFilter = filters.selectedModels || selectedModels;
 
@@ -660,14 +660,14 @@ const BrowseProducts = () => {
         ) {
           let filteredProducts = response.data.xchange;
 
-          // Apply brand filter if selected
+        
           if (brandFilter.length > 0) {
             filteredProducts = filteredProducts.filter(product =>
               brandFilter.includes(product.brand)
             );
           }
 
-          // Apply model filter if selected
+         
           if (modelFilter.length > 0) {
             filteredProducts = filteredProducts.filter(product =>
               modelFilter.includes(product.model)
@@ -737,10 +737,10 @@ const BrowseProducts = () => {
   useEffect(() => {
     setShowSkeleton(true);
     fetchProducts();
-    fetchBrandsAndModels(); // Fetch brands and models on component mount
+    fetchBrandsAndModels(); 
   }, []);
 
-  //Instant Search
+
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedQuery(query);
@@ -848,7 +848,8 @@ const BrowseProducts = () => {
           autoFocus
           onSubmitEditing={() => {
             handleSearch();
-            setShowInput(false); // close input after search
+            setShowInput(false); 
+
           }}
           returnKeyType="search"
         />
