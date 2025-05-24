@@ -506,7 +506,7 @@ const BrowseProducts = () => {
   const [priceRange, setPriceRange] = useState({min: '', max: ''});
   const [sortOrder, setSortOrder] = useState('');
   const [showInput, setShowInput] = useState(false);
-
+  const [filtersRelaxed, setFiltersRelaxed] = useState(false);
 
   const [brands, setBrands] = useState([]);
   const [models, setModels] = useState([]);
@@ -609,6 +609,7 @@ const BrowseProducts = () => {
     setShowSkeleton(true);
     setLastListingId('');
     setHasMore(true);
+    setFiltersRelaxed(false);
 
     fetchProducts(false, {
       selectedCategories,
@@ -627,97 +628,109 @@ const BrowseProducts = () => {
     setSortOrder('');
   };
 
-  const fetchProducts = async (loadMore = false, filters = {}) => {
-    if ((isLoading && !loadMore) || (loadMore && !hasMore)) return;
 
-    loadMore ? setIsLoadingMore(true) : setIsLoading(true);
-    setError(null);
+const fetchProducts = async (loadMore = false, filters = {}) => {
+  if ((isLoading && !loadMore) || (loadMore && !hasMore)) return;
 
-    try {
-     
-      let filterCategories = filters.selectedCategories || selectedCategories;
-      
-  
-      let brandFilter = filters.selectedBrands || selectedBrands;
-      let modelFilter = filters.selectedModels || selectedModels;
+  loadMore ? setIsLoadingMore(true) : setIsLoading(true);
+  setError(null);
 
-      const response = await axios.post(API_ENDPOINT, {
-        ...API_PARAMS,
-        last_listing_id: loadMore ? lastListingId : '',
-        categories: filterCategories,
-        min: filters.priceRange?.min ?? priceRange.min,
-        max: filters.priceRange?.max ?? priceRange.max,
-        sort: filters.sortOrder || sortOrder,
-        search: filters.searchQuery ?? searchQuery,
-      });
+  try {
+    // Determine if we should apply filters (false when filtersRelaxed is true)
+    const shouldApplyFilters = !filtersRelaxed && !filters.searchQuery;
+    
+    // Only apply filters if not in relaxed mode and not searching
+    let filterCategories = shouldApplyFilters 
+      ? (filters.selectedCategories || selectedCategories)
+      : [];
+    
+    let brandFilter = shouldApplyFilters 
+      ? (filters.selectedBrands || selectedBrands)
+      : [];
+    
+    let modelFilter = shouldApplyFilters 
+      ? (filters.selectedModels || selectedModels)
+      : [];
 
-      if (response.status === 200) {
-        console.log('API response:', response.data);
-        if (
-          response.data &&
-          response.data.xchange &&
-          Array.isArray(response.data.xchange)
-        ) {
-          let filteredProducts = response.data.xchange;
+    const response = await axios.post(API_ENDPOINT, {
+      ...API_PARAMS,
+      last_listing_id: loadMore ? lastListingId : '',
+      categories: filterCategories,
+      min: shouldApplyFilters ? (filters.priceRange?.min ?? priceRange.min) : '',
+      max: shouldApplyFilters ? (filters.priceRange?.max ?? priceRange.max) : '',
+      sort: shouldApplyFilters ? (filters.sortOrder || sortOrder) : '',
+      search: filters.searchQuery ?? searchQuery,
+    });
 
-        
+    if (response.status === 200) {
+      console.log('API response:', response.data);
+      if (response.data?.xchange && Array.isArray(response.data.xchange)) {
+        let filteredProducts = response.data.xchange;
+
+        if (shouldApplyFilters) {
           if (brandFilter.length > 0) {
             filteredProducts = filteredProducts.filter(product =>
               brandFilter.includes(product.brand)
             );
           }
 
-         
           if (modelFilter.length > 0) {
             filteredProducts = filteredProducts.filter(product =>
               modelFilter.includes(product.model)
             );
           }
-
-          setProducts(prevProducts =>
-            loadMore
-              ? [...prevProducts, ...filteredProducts]
-              : filteredProducts,
-          );
-
-          if (filteredProducts.length > 0) {
-            setLastListingId(
-              filteredProducts[filteredProducts.length - 1].listing_id,
-            );
-          }
-
-          setHasMore(filteredProducts.length > 0);
-        } else if (
-          typeof response.data === 'string' &&
-          (response.data.includes('Account is suspended') ||
-            response.data.includes('Account is deleted') ||
-            response.data.includes('Version not compatible') ||
-            response.data.includes('IDX12741'))
-        ) {
-          setError(response.data);
-          Alert.alert(
-            'Error',
-            `${response.data}. You will now be logged out of this app.`,
-          );
-          setProducts([]);
-        } else {
-          setError('Invalid response format from server');
-          setProducts([]);
         }
+
+        setProducts(prevProducts =>
+          loadMore
+            ? [...prevProducts, ...filteredProducts]
+            : filteredProducts
+        );
+
+        if (filteredProducts.length > 0) {
+          setLastListingId(
+            filteredProducts[filteredProducts.length - 1].listing_id
+          );
+        }
+
+        setHasMore(filteredProducts.length > 0);
+      } else if (
+        typeof response.data === 'string' &&
+        (response.data.includes('Account is suspended') ||
+        response.data.includes('Account is deleted') ||
+        response.data.includes('Version not compatible') ||
+        response.data.includes('IDX12741'))
+      ) {
+        setError(response.data);
+        Alert.alert(
+          'Error',
+          `${response.data}. You will now be logged out of this app.`,
+        );
+        setProducts([]);
       } else {
-        setError('Failed to fetch products');
+        setError('Invalid response format from server');
         setProducts([]);
       }
-    } catch (err) {
-      setError(err.message || 'An error occurred while fetching products');
+    } else {
+      setError('Failed to fetch products');
       setProducts([]);
-      console.error('API error:', err);
-    } finally {
-      loadMore ? setIsLoadingMore(false) : setIsLoading(false);
-      setIsRefreshing(false);
-      setShowSkeleton(false);
     }
-  };
+  } catch (err) {
+    setError(err.message || 'An error occurred while fetching products');
+    setProducts([]);
+    console.error('API error:', err);
+  } finally {
+    loadMore ? setIsLoadingMore(false) : setIsLoading(false);
+    setIsRefreshing(false);
+    setShowSkeleton(false);
+  }
+};
+
+  useEffect(() => {
+  if (!query) {
+    setFiltersRelaxed(false);
+  }
+}, [query]);
 
   const handleRefresh = () => {
     setIsRefreshing(true);
@@ -728,11 +741,13 @@ const BrowseProducts = () => {
   };
 
   const handleSearch = () => {
-    setLastListingId('');  
-    setHasMore(true);
-    fetchProducts(false, { searchQuery: query }); 
-    setShowInput(false);  
-  };
+  setLastListingId('');
+  setHasMore(true);
+  setFiltersRelaxed(true); 
+  fetchProducts(false, { searchQuery: query });
+  setShowInput(false);
+};
+
 
   useEffect(() => {
     setShowSkeleton(true);
