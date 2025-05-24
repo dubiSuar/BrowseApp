@@ -115,18 +115,26 @@ const FilterModal = ({
   visible,
   onClose,
   categories,
+  brands,
+  models,
   selectedCategories,
+  selectedBrands,
+  selectedModels,
   toggleCategory,
+  toggleBrand,
+  toggleModel,
   priceRange,
   setPriceRange,
   sortOrder,
   setSortOrder,
   applyFilters,
   clearFilters,
+  loadingBrands,
+  loadingModels,
 }) => {
   const [slideAnim] = useState(new Animated.Value(Dimensions.get('window').width));
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
-  const [localSelectedCategory, setLocalSelectedCategory] = useState('');
+  const [localSelectedCategory, setLocalSelectedCategory] = useState('Category');
 
   const priceRanges = [
     {label: '1 - 5k', min: 1, max: 5000},
@@ -154,7 +162,118 @@ const FilterModal = ({
   const handleCategorySelect = (category) => {
     setLocalSelectedCategory(category);
     setShowCategoryDropdown(false);
-    toggleCategory(category); 
+  };
+
+  const renderFilterContent = () => {
+    switch (localSelectedCategory) {
+      case 'Category':
+        return (
+          <View style={styles.categoryContainer}>
+            {categories.map(category => (
+              <TouchableOpacity
+                key={category}
+                style={[
+                  styles.categoryButton,
+                  selectedCategories.includes(category) &&
+                    styles.selectedCategory,
+                  {width: '45%', margin: '2%'},
+                ]}
+                onPress={() => toggleCategory(category)}>
+                <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  style={[
+                    selectedCategories.includes(category)
+                      ? styles.selectedCategoryText
+                      : styles.categoryText,
+                    {flexShrink: 1},
+                  ]}>
+                  {category}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        );
+      
+      case 'Brand':
+        if (loadingBrands) {
+          return (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="small" color="#6200ee" />
+              <Text style={styles.loadingText}>Loading brands...</Text>
+            </View>
+          );
+        }
+        return (
+          <View style={styles.categoryContainer}>
+            {brands.map(brand => (
+              <TouchableOpacity
+                key={brand}
+                style={[
+                  styles.categoryButton,
+                  selectedBrands.includes(brand) &&
+                    styles.selectedCategory,
+                  {width: '45%', margin: '2%'},
+                ]}
+                onPress={() => toggleBrand(brand)}>
+                <Text
+                  numberOfLines={2}
+                  ellipsizeMode="tail"
+                  style={[
+                    selectedBrands.includes(brand)
+                      ? styles.selectedCategoryText
+                      : styles.categoryText,
+                    {flexShrink: 1},
+                  ]}>
+                  {brand}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        );
+      
+      case 'Model':
+        if (loadingModels) {
+          return (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="small" color="#6200ee" />
+              <Text style={styles.loadingText}>Loading models...</Text>
+            </View>
+          );
+        }
+        return (
+          <ScrollView style={{maxHeight: 200}}>
+            <View style={styles.categoryContainer}>
+              {models.map((model, index) => (
+                <TouchableOpacity
+                  key={`${model}-${index}`}
+                  style={[
+                    styles.categoryButton,
+                    selectedModels.includes(model) &&
+                      styles.selectedCategory,
+                    {width: '90%', margin: '2%'},
+                  ]}
+                  onPress={() => toggleModel(model)}>
+                  <Text
+                    numberOfLines={3}
+                    ellipsizeMode="tail"
+                    style={[
+                      selectedModels.includes(model)
+                        ? styles.selectedCategoryText
+                        : styles.categoryText,
+                      {flexShrink: 1},
+                    ]}>
+                    {model}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </ScrollView>
+        );
+      
+      default:
+        return null;
+    }
   };
 
   return (
@@ -187,12 +306,12 @@ const FilterModal = ({
         <ScrollView>
           {/* Category Dropdown Section */}
           <View style={styles.filterSection}>
-            <Text style={styles.sectionTitle}>Category</Text>
+            <Text style={styles.sectionTitle}>Filter By</Text>
             <TouchableOpacity
               style={styles.categoryDropdownButton}
               onPress={() => setShowCategoryDropdown(!showCategoryDropdown)}>
               <Text style={styles.categoryDropdownText}>
-                {localSelectedCategory || 'Select Category'}
+                {localSelectedCategory || 'Select Filter Type'}
               </Text>
               <Image
                 source={
@@ -207,25 +326,53 @@ const FilterModal = ({
             {showCategoryDropdown && (
               <View style={styles.categoryDropdownList}>
                 <ScrollView nestedScrollEnabled={true} style={{maxHeight: 150}}>
-                  {categories.map(category => (
-                    <TouchableOpacity
-                      key={category}
-                      style={[
-                        styles.categoryDropdownItem,
-                        selectedCategories.includes(category) &&
-                          styles.selectedCategory,
-                      ]}
-                      onPress={() => handleCategorySelect(category)}>
-                      <Text
-                        style={
-                          selectedCategories.includes(category)
-                            ? styles.selectedCategoryText
-                            : styles.categoryText
-                        }>
-                        {category}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
+                  <TouchableOpacity
+                    style={[
+                      styles.categoryDropdownItem,
+                      localSelectedCategory === 'Category' && styles.selectedCategory,
+                    ]}
+                    onPress={() => handleCategorySelect('Category')}>
+                    <Text
+                      style={
+                        localSelectedCategory === 'Category'
+                          ? styles.selectedCategoryText
+                          : styles.categoryText
+                      }>
+                      Category
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[
+                      styles.categoryDropdownItem,
+                      localSelectedCategory === 'Brand' && styles.selectedCategory,
+                    ]}
+                    onPress={() => handleCategorySelect('Brand')}>
+                    <Text
+                      style={
+                        localSelectedCategory === 'Brand'
+                          ? styles.selectedCategoryText
+                          : styles.categoryText
+                      }>
+                      Brand
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[
+                      styles.categoryDropdownItem,
+                      localSelectedCategory === 'Model' && styles.selectedCategory,
+                    ]}
+                    onPress={() => handleCategorySelect('Model')}>
+                    <Text
+                      style={
+                        localSelectedCategory === 'Model'
+                          ? styles.selectedCategoryText
+                          : styles.categoryText
+                      }>
+                      Model
+                    </Text>
+                  </TouchableOpacity>
                 </ScrollView>
               </View>
             )}
@@ -268,34 +415,10 @@ const FilterModal = ({
             </View>
           </View>
 
-          {/* Filter by Category Section */}
+          {/* Dynamic Filter Section */}
           <View style={styles.filterSection}>
-            <Text style={styles.sectionTitle}>Filter by Category</Text>
-            <View style={styles.categoryContainer}>
-              {categories.map(category => (
-                <TouchableOpacity
-                  key={category}
-                  style={[
-                    styles.categoryButton,
-                    selectedCategories.includes(category) &&
-                      styles.selectedCategory,
-                    {width: '45%', margin: '2%'},
-                  ]}
-                  onPress={() => toggleCategory(category)}>
-                  <Text
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                    style={[
-                      selectedCategories.includes(category)
-                        ? styles.selectedCategoryText
-                        : styles.categoryText,
-                      {flexShrink: 1},
-                    ]}>
-                    {category}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+            <Text style={styles.sectionTitle}>Filter by {localSelectedCategory}</Text>
+            {renderFilterContent()}
           </View>
 
           {/* Value Range Section */}
@@ -362,6 +485,7 @@ const FilterModal = ({
     </Modal>
   );
 };
+
 //=0=0=0=0=0=0=0=0=0=0=0=0
 //products
 //=0=0=0=0=0=0=0=0=0=0=0=0
@@ -377,10 +501,17 @@ const BrowseProducts = () => {
   const [showSkeleton, setShowSkeleton] = useState(false);
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedBrands, setSelectedBrands] = useState([]);
+  const [selectedModels, setSelectedModels] = useState([]);
   const [priceRange, setPriceRange] = useState({min: '', max: ''});
   const [sortOrder, setSortOrder] = useState('');
   const [showInput, setShowInput] = useState(false);
-  const [filtersRelaxed, setFiltersRelaxed] = useState(false);
+
+  // Brand and Model data
+  const [brands, setBrands] = useState([]);
+  const [models, setModels] = useState([]);
+  const [loadingBrands, setLoadingBrands] = useState(false);
+  const [loadingModels, setLoadingModels] = useState(false);
 
   //search
   const [query, setQuery] = useState('');
@@ -417,136 +548,214 @@ const BrowseProducts = () => {
         : [...prev, category],
     );
   };
-    const applyFilters = () => {
-      setShowFilterModal(false);
-      setShowSkeleton(true);
-      setLastListingId('');
-      setHasMore(true);
 
-      fetchProducts(false, {
-        selectedCategories,
-        priceRange,
-        sortOrder,
-      });
+  const toggleBrand = brand => {
+    setSelectedBrands(prev =>
+      prev.includes(brand)
+        ? prev.filter(b => b !== brand)
+        : [...prev, brand],
+    );
   };
 
+  const toggleModel = model => {
+    setSelectedModels(prev =>
+      prev.includes(model)
+        ? prev.filter(m => m !== model)
+        : [...prev, model],
+    );
+  };
+
+  const fetchBrandsAndModels = async () => {
+    setLoadingBrands(true);
+    setLoadingModels(true);
+
+    try {
+      const response = await axios.post(API_ENDPOINT, {
+        ...API_PARAMS,
+        last_listing_id: '',
+        categories: [],
+        min: '',
+        max: '',
+        sort: '',
+        search: '',
+      });
+
+      if (response.status === 200 && response.data && response.data.xchange && Array.isArray(response.data.xchange)) {
+        const uniqueBrands = [...new Set(
+          response.data.xchange
+            .map(item => item.brand)
+            .filter(brand => brand && brand.trim() !== '')
+        )].sort();
+
+        const uniqueModels = [...new Set(
+          response.data.xchange
+            .map(item => item.model)
+            .filter(model => model && model.trim() !== '')
+        )].sort();
+
+        setBrands(uniqueBrands);
+        setModels(uniqueModels);
+      }
+    } catch (err) {
+      console.error('Error fetching brands and models:', err);
+    } finally {
+      setLoadingBrands(false);
+      setLoadingModels(false);
+    }
+  };
+
+  const applyFilters = () => {
+    setShowFilterModal(false);
+    setShowSkeleton(true);
+    setLastListingId('');
+    setHasMore(true);
+
+    fetchProducts(false, {
+      selectedCategories,
+      selectedBrands,
+      selectedModels,
+      priceRange,
+      sortOrder,
+    });
+  };
 
   const clearFilters = () => {
     setSelectedCategories([]);
+    setSelectedBrands([]);
+    setSelectedModels([]);
     setPriceRange({min: '', max: ''});
     setSortOrder('');
   };
 
- const fetchProducts = async (loadMore = false, filters = {}) => {
-  if ((isLoading && !loadMore) || (loadMore && !hasMore)) return;
+  const fetchProducts = async (loadMore = false, filters = {}) => {
+    if ((isLoading && !loadMore) || (loadMore && !hasMore)) return;
 
-  loadMore ? setIsLoadingMore(true) : setIsLoading(true);
-  setError(null);
+    loadMore ? setIsLoadingMore(true) : setIsLoading(true);
+    setError(null);
 
-  try {
-    const response = await axios.post(API_ENDPOINT, {
-      ...API_PARAMS,
-      last_listing_id: loadMore ? lastListingId : '',
-      categories: filters.selectedCategories ?? selectedCategories,
-      min: filters.priceRange?.min ?? priceRange.min,
-      max: filters.priceRange?.max ?? priceRange.max,
-      sort: filters.sortOrder ?? sortOrder,
-      search: filters.searchQuery ?? searchQuery,
-    });
+    try {
+      // Build filter parameters
+      let filterCategories = filters.selectedCategories || selectedCategories;
+      
+      // Add brand filtering logic
+      let brandFilter = filters.selectedBrands || selectedBrands;
+      let modelFilter = filters.selectedModels || selectedModels;
 
-    if (response.status === 200) {
-      const data = response.data;
+      const response = await axios.post(API_ENDPOINT, {
+        ...API_PARAMS,
+        last_listing_id: loadMore ? lastListingId : '',
+        categories: filterCategories,
+        min: filters.priceRange?.min ?? priceRange.min,
+        max: filters.priceRange?.max ?? priceRange.max,
+        sort: filters.sortOrder || sortOrder,
+        search: filters.searchQuery ?? searchQuery,
+      });
 
-      if (data?.xchange && Array.isArray(data.xchange)) {
-        if (data.xchange.length > 0) {
+      if (response.status === 200) {
+        console.log('API response:', response.data);
+        if (
+          response.data &&
+          response.data.xchange &&
+          Array.isArray(response.data.xchange)
+        ) {
+          let filteredProducts = response.data.xchange;
+
+          // Apply brand filter if selected
+          if (brandFilter.length > 0) {
+            filteredProducts = filteredProducts.filter(product =>
+              brandFilter.includes(product.brand)
+            );
+          }
+
+          // Apply model filter if selected
+          if (modelFilter.length > 0) {
+            filteredProducts = filteredProducts.filter(product =>
+              modelFilter.includes(product.model)
+            );
+          }
+
           setProducts(prevProducts =>
-            loadMore ? [...prevProducts, ...data.xchange] : data.xchange
+            loadMore
+              ? [...prevProducts, ...filteredProducts]
+              : filteredProducts,
           );
 
-          setLastListingId(data.xchange[data.xchange.length - 1].listing_id);
-          setHasMore(true);
-        } else {
-          if (!filtersRelaxed) {
-            console.log('Auto-relaxing filters...');
-            setFiltersRelaxed(true);
-            setLastListingId('');
-            fetchProducts(false, {
-              searchQuery: '',
-              selectedCategories: [],
-              
-            });
-            return;
-          } else {
-            setHasMore(false);
+          if (filteredProducts.length > 0) {
+            setLastListingId(
+              filteredProducts[filteredProducts.length - 1].listing_id,
+            );
           }
+
+          setHasMore(filteredProducts.length > 0);
+        } else if (
+          typeof response.data === 'string' &&
+          (response.data.includes('Account is suspended') ||
+            response.data.includes('Account is deleted') ||
+            response.data.includes('Version not compatible') ||
+            response.data.includes('IDX12741'))
+        ) {
+          setError(response.data);
+          Alert.alert(
+            'Error',
+            `${response.data}. You will now be logged out of this app.`,
+          );
+          setProducts([]);
+        } else {
+          setError('Invalid response format from server');
+          setProducts([]);
         }
-      } else if (typeof data === 'string' &&
-        (data.includes('Account is suspended') ||
-          data.includes('Account is deleted') ||
-          data.includes('Version not compatible') ||
-          data.includes('IDX12741'))) {
-        setError(data);
-        Alert.alert('Error', `${data}. You will now be logged out of this app.`);
-        setProducts([]);
       } else {
-        setError('Invalid response format from server');
+        setError('Failed to fetch products');
         setProducts([]);
       }
-    } else {
-      setError('Failed to fetch products');
+    } catch (err) {
+      setError(err.message || 'An error occurred while fetching products');
       setProducts([]);
+      console.error('API error:', err);
+    } finally {
+      loadMore ? setIsLoadingMore(false) : setIsLoading(false);
+      setIsRefreshing(false);
+      setShowSkeleton(false);
     }
-  } catch (err) {
-    setError(err.message || 'An error occurred while fetching products');
-    setProducts([]);
-    console.error('API error:', err);
-  } finally {
-    loadMore ? setIsLoadingMore(false) : setIsLoading(false);
-    setIsRefreshing(false);
-    setShowSkeleton(false);
-  }
-};
+  };
 
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    setShowSkeleton(true);
+    setLastListingId('');
+    setHasMore(true);
+    fetchProducts();
+  };
 
-const handleRefresh = () => {
-  setIsRefreshing(true);
-  setShowSkeleton(true);
-  setLastListingId('');
-  setHasMore(true);
-  setFiltersRelaxed(false); 
-  fetchProducts();
-};
-
-const handleSearch = () => {
-  setLastListingId('');
-  setHasMore(true);
-  setFiltersRelaxed(false);
-  fetchProducts(false, { searchQuery: query });
-  setShowInput(false);
-};
-
+  const handleSearch = () => {
+    setLastListingId('');  
+    setHasMore(true);
+    fetchProducts(false, { searchQuery: query }); 
+    setShowInput(false);  
+  };
 
   useEffect(() => {
     setShowSkeleton(true);
     fetchProducts();
+    fetchBrandsAndModels(); // Fetch brands and models on component mount
   }, []);
 
   //Instant Search
   useEffect(() => {
-  const handler = setTimeout(() => {
-    setDebouncedQuery(query);
-  }, 500); 
+    const handler = setTimeout(() => {
+      setDebouncedQuery(query);
+    }, 500); 
 
-  return () => {
-    clearTimeout(handler); 
-  };
-}, [query]);
+    return () => {
+      clearTimeout(handler); 
+    };
+  }, [query]);
 
-useEffect(() => {
-  setLastListingId('');
-  setHasMore(true);
-  fetchProducts(false, { searchQuery: debouncedQuery });
-}, [debouncedQuery]);
+  useEffect(() => {
+    setLastListingId('');
+    setHasMore(true);
+    fetchProducts(false, { searchQuery: debouncedQuery });
+  }, [debouncedQuery]);
 
   const handleLoadMore = () => {
     if (!isLoadingMore && hasMore && products.length > 0) {
@@ -630,26 +839,26 @@ useEffect(() => {
         </View>
       </View>
 
-        {showInput ? (
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search for something..."
-            value={query}
-            onChangeText={setQuery}
-            autoFocus
-            onSubmitEditing={() => {
-              handleSearch();
-              setShowInput(false); // close input after search
-            }}
-            returnKeyType="search"
-          />
-        ) : (
-          <TouchableOpacity style={styles.searchBar} onPress={() => setShowInput(true)}>
-            <Text style={styles.searchText}>
-              {query.trim() === '' ? "Tell us what you're looking for." : query}
-            </Text>
-          </TouchableOpacity>
-        )}
+      {showInput ? (
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search for something..."
+          value={query}
+          onChangeText={setQuery}
+          autoFocus
+          onSubmitEditing={() => {
+            handleSearch();
+            setShowInput(false); // close input after search
+          }}
+          returnKeyType="search"
+        />
+      ) : (
+        <TouchableOpacity style={styles.searchBar} onPress={() => setShowInput(true)}>
+          <Text style={styles.searchText}>
+            {query.trim() === '' ? "Tell us what you're looking for." : query}
+          </Text>
+        </TouchableOpacity>
+      )}
 
       <View style={styles.discoveryHeader}>
         <Text style={styles.discoveryText}>Daily Discovery</Text>
@@ -709,14 +918,22 @@ useEffect(() => {
         visible={showFilterModal}
         onClose={() => setShowFilterModal(false)}
         categories={categories}
+        brands={brands}
+        models={models}
         selectedCategories={selectedCategories}
+        selectedBrands={selectedBrands}
+        selectedModels={selectedModels}
         toggleCategory={toggleCategory}
+        toggleBrand={toggleBrand}
+        toggleModel={toggleModel}
         priceRange={priceRange}
         setPriceRange={setPriceRange}
         sortOrder={sortOrder}
         setSortOrder={setSortOrder}
         applyFilters={applyFilters}
         clearFilters={clearFilters}
+        loadingBrands={loadingBrands}
+        loadingModels={loadingModels}
       />
       <BottomNavigationBar />
     </View>
